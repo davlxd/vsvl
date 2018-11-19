@@ -1,6 +1,9 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+
+import { connect } from 'react-redux'
+
+import logo from './logo.svg'
+import './index.css'
 
 class App extends Component {
   render() {
@@ -21,8 +24,8 @@ class App extends Component {
           </a>
         </header>
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default connect()(App)
