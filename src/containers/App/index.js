@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-
 import { connect } from 'react-redux'
+
+import CssBaseline from '@material-ui/core/CssBaseline'
 
 import logo from './logo.svg'
 import './index.css'
@@ -9,6 +10,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <CssBaseline />
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <p>
