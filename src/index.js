@@ -10,6 +10,8 @@ import * as reducers from './reducers'
 
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
+import LegalDoc from './components/LegalDoc'
+
 const store = createStore(
   combineReducers(reducers)
 )
@@ -21,6 +23,9 @@ ReactDOM.render(
         <Route exact path="/" component={App} />
         <Route path="/app" component={App} />
         <Route path="/topics" component={App} />
+        <Route path="/terms-of-service" component={LegalDoc}/>
+        <Route path="/privacy-policy" component={LegalDoc}/>
+        <Route path="/cookie-policy" component={LegalDoc}/>
       </div>
     </Router>
   </Provider>,
