@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 
+const { createWriteStream, supported, version } = window.streamSaver
+
+
 const styles = theme => ({
   bgvFullScreen: {
     position: 'fixed',
@@ -35,11 +38,15 @@ const bgHeight = () => window.innerHeight
 class Test extends Component {
   constructor(props) {
     super(props)
+    // this.fileStream = createWriteStream('filename.mp4')
+    // this.writer = this.fileStream.getWriter()
+
     this.videoRef = React.createRef()
     this.canvasRef = React.createRef()
     this.state = {
       playBackStyle: 'original',
-      frameRatio: 1.3
+      frameRatio: 1.3,
+      abort: false, //TEMP
     }
   }
 
@@ -52,8 +59,9 @@ class Test extends Component {
 
   initiateCamera() {
     navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: { facingMode: 'environment', frameRate: 3}
+      audio: false,
+      // video: { facingMode: 'environment', frameRate: 3}
+      video: { facingMode: 'environment', }
     }).then(stream => {
       this.videoRef.current.srcObject = stream
       const {frameRate, height, width} = stream.getVideoTracks()[0].getSettings()
@@ -64,6 +72,7 @@ class Test extends Component {
         height,
         width
       })
+      // this.dumpVideoStreamToFile(stream)
 
       this.motionDetect()
 
@@ -79,7 +88,6 @@ class Test extends Component {
     const cv = window.cv
 
     console.log(cv)
-    console.log(cv.putText)
 
     let cap = new cv.VideoCapture(this.videoRef.current)
     let frame = new cv.Mat(height, width, cv.CV_8UC4)
@@ -87,25 +95,43 @@ class Test extends Component {
     let fgbg = new cv.BackgroundSubtractorMOG2(500, 16, true);
 
 
+    // setTimeout(() => {
+    //   this.setState({
+    //     abort: true
+    //   })
+    // }, 4000)
+    //
+    // setTimeout(() => {
+    //   console.log('asdfasdfasdfdsfa')
+    //   this.writer.close()
+    // }, 5000)
+
+
     const FPS = frameRate
-    function processVideo() {
+    const processVideo = () => {
         try {
             // if (!streaming) {
             //     // clean and stop.
-            //     frame.delete(); fgmask.delete(); fgbg.delete();
+            //     frame.delete(); fgmask.delete(); fgbg.delete();  TODO this
             //     return;
             // }
             let begin = Date.now();
             // start processing.
             cap.read(frame);
-            fgbg.apply(frame, fgmask);
-            cv.putText(fgmask, 'fuck', {x: 100, y: 100}, cv.FONT_HERSHEY_SIMPLEX, 5.0, [255, 255, 255, 255])
-            cv.imshow('canvasOutput', fgmask);
-            console.log(fgmask)
-            console.log(cv.countNonZero(fgmask)) // TODO with a threshold then problem solved
+            // fgbg.apply(frame, fgmask);
+            // cv.putText(fgmask, 'fuck', {x: 100, y: 100}, cv.FONT_HERSHEY_SIMPLEX, 5.0, [255, 255, 255, 255])
+            cv.putText(frame, 'fuck', {x: 100, y: 100}, cv.FONT_HERSHEY_SIMPLEX, 5.0, [255, 255, 255, 255])
+            // cv.imshow('canvasOutput', fgmask);
+            cv.imshow('canvasOutput', frame);
+            // this.writer.write(fgmask.data)
+
+            // console.log(cv.countNonZero(fgmask)) // TODO with a threshold then problem solved
             // schedule the next one.
             let delay = 1000/FPS - (Date.now() - begin);
-            setTimeout(processVideo, delay);
+
+            if (!this.state.abort) {
+              setTimeout(processVideo, delay);
+            }
         } catch (err) {
             console.error(err);
         }
@@ -114,8 +140,94 @@ class Test extends Component {
     setTimeout(processVideo, 0);
   }
 
+
+  dumpVideoStreamToFile(mediaStream) {
+    let fr = new FileReader
+    let mediaRecorder = new MediaRecorder(mediaStream)
+    let chunks = Promise.resolve()
+    let fileStream = createWriteStream('filename.mp4')
+    let writer = fileStream.getWriter()
+
+
+    mediaRecorder.start()
+
+    setTimeout(event => {
+      mediaRecorder.stop()
+      setTimeout(() =>
+        chunks.then(evt => writer.close())
+      , 1000)
+    }, 10000)
+
+
+    mediaRecorder.onstart = () => {
+      console.log('---------------------onstart')
+    }
+    mediaRecorder.onstop = () => {
+      console.log('---------------------onstop')
+    }
+    mediaRecorder.ondataavailable = ({data}) => {
+      console.log('---------------------ondataavailable')
+  		chunks = chunks.then(() => new Promise(resolve => {
+  			fr.onload = () => {
+  				writer.write(new Uint8Array(fr.result))
+  				resolve()
+  			}
+  			fr.readAsArrayBuffer(data)
+  		}))
+  	}
+
+  }
+
+  dumpCanvasToFile() {
+    console.log('this.canvasRef.current')
+
+    const { frameRate } = this.state
+    console.log(this.canvasRef.current)
+    const mediaStream = this.canvasRef.current.captureStream(frameRate)
+    const ctx = this.canvasRef.current.getContext('2d')
+    const mediaRecorder = new MediaRecorder(mediaStream);
+    let chunks = Promise.resolve()
+    const fr = new FileReader
+
+  	const fileStream = createWriteStream('filename.mp4')
+  	const writer = fileStream.getWriter()
+
+
+    // start it
+      mediaRecorder.start();
+
+
+      setTimeout(event => {
+        mediaRecorder.stop()
+        setTimeout(() =>
+          chunks.then(evt => writer.close())
+        , 1000)
+      }, 10000)
+
+
+      mediaRecorder.onstart = () => {
+        console.log('---------------------onstart')
+      }
+      mediaRecorder.onstop = () => {
+        console.log('---------------------onstop')
+      }
+      mediaRecorder.ondataavailable = ({data}) => {
+        console.log('---------------------ondataavailable')
+    		chunks = chunks.then(() => new Promise(resolve => {
+    			fr.onload = () => {
+    				writer.write(new Uint8Array(fr.result))
+    				resolve()
+    			}
+    			fr.readAsArrayBuffer(data)
+    		}))
+    	}
+
+
+  }
   componentDidMount() {
     this.initiateCamera()
+    this.dumpCanvasToFile()
+
   }
 
   render() {
