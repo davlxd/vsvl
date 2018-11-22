@@ -6,22 +6,25 @@ import * as serviceWorker from './serviceWorker'
 
 import { Provider } from 'react-redux'
 import { createStore, combineReducers } from 'redux'
-import * as reducers from './reducers'
+import reducers from './reducers'
 
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import LegalDoc from './components/LegalDoc'
 import Test from './containers/Test'
+import Home from './containers/Home'
+
+window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
 
 const store = createStore(
-  combineReducers(reducers)
+  combineReducers({...reducers})
 )
 
 ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div>
-        <Route exact path="/" component={App} />
+        <Route exact path="/" component={Home} />
         <Route path="/app" component={App} />
         <Route path="/test" component={Test} />
         <Route path="/terms-of-service" component={LegalDoc}/>
