@@ -16,7 +16,6 @@ const bgHeight = () => window.innerHeight
 class Home extends Component {
   constructor(props) {
     super(props)
-    window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
   }
 
 
@@ -30,7 +29,6 @@ class Home extends Component {
     applyWebStorageValue('v', Number(localStorage.getItem('v')))
     applyWebStorageValue('settings', JSON.parse(localStorage.getItem('settings')))
   }
-
 
 
   render() {

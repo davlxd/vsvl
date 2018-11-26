@@ -76,6 +76,7 @@ class ConsentDialog extends Component {
             <FormControlLabel
               control={
                 <Checkbox
+                  id="checkbox-comply-legal-activities"
                   checked={complyLegalActivitiesChecked}
                   onChange={this.handleCheck('complyLegalActivitiesChecked')}
                   color="primary"
@@ -97,6 +98,7 @@ class ConsentDialog extends Component {
             <FormControlLabel
               control={
                 <Checkbox
+                  id="checkbox-consent-to-legal-docs"
                   checked={consentToLegalDocsCheck}
                   onChange={this.handleCheck('consentToLegalDocsCheck')}
                   color="primary"
@@ -106,7 +108,7 @@ class ConsentDialog extends Component {
             />
           </DialogContent>
           <DialogActions>
-            <Button variant="outlined" onClick={this.handleProceed} color="primary" disabled={!(complyLegalActivitiesChecked && consentToLegalDocsCheck)} autoFocus>
+            <Button id="proceed-button" variant="outlined" onClick={this.handleProceed} color="primary" disabled={!(complyLegalActivitiesChecked && consentToLegalDocsCheck)} autoFocus>
               Proceed
             </Button>
           </DialogActions>
@@ -129,6 +131,8 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(USER_CLICK_CONSENT)
   }
 })
+
+export let StyledConsentDialog = withStyles(styles)(ConsentDialog)
 
 export default withStyles(styles)(
   connect(
