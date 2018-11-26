@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 
 import ConsentDialog from '../ConsentDialog'
+import VideoSurvl from '../VideoSurvl'
 
 import { APPLY_WEB_STORAGE_VALUE, } from '../../actions'
 
@@ -32,14 +33,19 @@ class Home extends Component {
 
 
   render() {
-    const { classes } = this.props
+    const { classes, consent, } = this.props
     return (
-      <ConsentDialog />
+      <div>
+        <ConsentDialog />
+        { consent ? <VideoSurvl /> : null }
+      </div>
+
     )
   }
 }
 
 const mapStateToProps = (state) => ({
+  consent: state.misc.consent
 })
 
 const mapDispatchToProps = (dispatch) => ({

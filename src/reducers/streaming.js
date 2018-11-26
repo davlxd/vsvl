@@ -1,18 +1,19 @@
 const initialState = {
-  playBackStyle: 'original',
-  frameRate: 10,
-  frameRatio: 1.3,
-  width: null,
-  height: null,
+  motioning: false
 }
 
 
 export default (state = initialState, action) => {
   switch(action.type) {
-    case 'APPLY_VIDEO_PARAMS_AS_SETTINGS':
+    case 'MOTION_DETECTED':
       return {
         ...state,
-        ...action.obj
+        motioning: true
+      }
+    case 'MOTION_GONE':
+      return {
+        ...state,
+        motioning: false
       }
     default:
       return state

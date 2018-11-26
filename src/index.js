@@ -20,6 +20,13 @@ const store = createStore(
   combineReducers({...reducers})
 )
 
+//TODO remove this
+store.subscribe(() => {
+  console.log('-- store.getState() --')
+  console.log(store.getState())
+})
+
+
 ReactDOM.render(
   <Provider store={store}>
     <Router>
