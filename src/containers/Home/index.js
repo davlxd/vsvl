@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 
 import ConsentDialog from '../ConsentDialog'
 import VideoSurvl from '../VideoSurvl'
+import SettingsSlider from '../SettingsSlider'
 
 import { APPLY_WEB_STORAGE_VALUE, } from '../../actions'
 
@@ -37,7 +38,8 @@ class Home extends Component {
     return (
       <div>
         <ConsentDialog />
-        { consent ? <VideoSurvl /> : null }
+        {/* consent ? <VideoSurvl /> : null */}
+        <SettingsSlider />
       </div>
     )
   }
