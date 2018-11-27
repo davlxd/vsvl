@@ -19,10 +19,10 @@ class Home extends Component {
     super(props)
   }
 
-
   componentDidMount() {
     this.loadWebStorageValue()
   }
+
   loadWebStorageValue() {
     const { applyWebStorageValue } = this.props
 
@@ -39,7 +39,6 @@ class Home extends Component {
         <ConsentDialog />
         { consent ? <VideoSurvl /> : null }
       </div>
-
     )
   }
 }
