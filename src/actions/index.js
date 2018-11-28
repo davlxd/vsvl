@@ -28,3 +28,11 @@ export const MOTION_DETECTED = {
 export const MOTION_GONE = {
   type: 'MOTION_GONE'
 }
+
+
+
+export const ALTER_SETTING = (name, value) => ({
+  type: 'ALTER_SETTING',
+  name,
+  value
+})

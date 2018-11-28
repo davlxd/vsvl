@@ -4,6 +4,16 @@ const initialState = {
   frameRatio: 1.3,
   width: null,
   height: null,
+
+  alertingOnMotion: true,
+  alertingOnMotionStrategy: 'alert-once',
+
+  savingToFiles: false,
+  savingToFilesPrefix: 'videosurveillance.webcamp-clip-',
+  savingToFilesOnlyMotionDetected: true,
+  savingToFilesStrategy: 'file-size',
+  splitFileSize: '10',
+  splitFileTime: 'every-hour',
 }
 
 
@@ -13,6 +23,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         ...action.obj
+      }
+    case 'ALTER_SETTING':
+      return {
+        ...state,
+        [action.name]: action.value
       }
     default:
       return state

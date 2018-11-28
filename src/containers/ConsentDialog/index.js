@@ -82,7 +82,7 @@ class ConsentDialog extends Component {
                   color="primary"
                 />
               }
-              label="I agree and understand."
+              label="I understand and agree."
             />
             <Divider />
             <br />
@@ -120,7 +120,7 @@ class ConsentDialog extends Component {
 
 ConsentDialog.propTypes = {
   fullScreen: PropTypes.bool.isRequired,
-};
+}
 
 const mapStateToProps = (state) => ({
   consent: state.misc.consent
