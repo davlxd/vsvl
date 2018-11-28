@@ -6,6 +6,7 @@ import Paper from '@material-ui/core/Paper'
 import Divider from '@material-ui/core/Divider'
 import Slide from '@material-ui/core/Slide'
 import FormControl from '@material-ui/core/FormControl'
+import TextField from '@material-ui/core/TextField'
 import Radio from '@material-ui/core/Radio'
 import FormLabel from '@material-ui/core/FormLabel'
 import RadioGroup from '@material-ui/core/RadioGroup'
@@ -18,7 +19,7 @@ const styles = theme => ({
   root: {
     width: '100vw',
     height: '100vh',
-    overflow: 'hidden',
+    overflowY: 'hidden',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -27,29 +28,43 @@ const styles = theme => ({
     position: 'fixed',
     bottom: 0,
     left: '50%',
+    zIndex: 2,
   },
   bigPaper: {
+    background: 'rgba(255,255,255,0.5)',
     zIndex: 1,
     width: '90%',
-    padding: theme.spacing.unit,
+    maxHeight: '90%',
+    overflow: 'auto',
+    padding: theme.spacing.unit * 2,
 
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
   },
   paperSettingColumn: {
+    background: 'rgba(255,255,255,0.8)',
     margin: theme.spacing.unit,
     padding: theme.spacing.unit * 2,
-    maxWidth: theme.spacing.unit * 50,
+    maxWidth: theme.spacing.unit * 40,
+    minWidth: theme.spacing.unit * 40,
+    // display: 'flex',
+    // flexDirection: 'column',
   },
-  svg: {
-    width: 400,
-    height: 100,
+  dividerBelowTitle: {
+    marginBottom: theme.spacing.unit,
   },
-  polygon: {
-    fill: theme.palette.common.white,
-    stroke: theme.palette.divider,
-    strokeWidth: 1,
+  radioGroup: {
+    flexDirection: 'row',
+  },
+  filePrefixTextField: {
+    marginBottom: theme.spacing.unit * 3,
+  },
+  ul: {
+    marginTop: theme.spacing.unit * 0.5,
+  },
+  a: {
+    color: 'inherit'
   },
 })
 
@@ -76,16 +91,13 @@ class SettingsSlider extends React.Component {
           <SettingsIcon />
         </IconButton>
         <Slide direction="up" in={checked} mountOnEnter unmountOnExit>
-          <Paper elevation={1} className={classes.bigPaper}>
+          <Paper elevation={0} className={classes.bigPaper}>
             <Paper elevation={1} className={classes.paperSettingColumn}>
               <Typography variant="h5" gutterBottom> Live Feed </Typography>
-              <Divider />
-              <FormControlLabel
-                control={ <Switch checked={true} onChange={this.handleChange('checkedA')} color="primary" /> }
-                label="Alert when motion detected"
-              />
+              <Divider className={classes.dividerBelowTitle}/>
+              <FormControlLabel control={ <Switch checked={true} onChange={this.handleChange('checkedA')} color="primary" /> } label="Alert when motion detected" />
               <FormControl component="fieldset" className={classes.formControl}>
-                <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.group} value={this.state.value} onChange={this.handleChange}>
+                <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={this.state.value} onChange={this.handleChange}>
                   <FormControlLabel value="alert-once" control={<Radio />} label="Alert once" />
                   <FormControlLabel value="keep-alerting" control={<Radio />} label="Keep alerting" />
                 </RadioGroup>
@@ -93,17 +105,36 @@ class SettingsSlider extends React.Component {
             </Paper>
 
             <Paper elevation={1} className={classes.paperSettingColumn}>
-              <svg className={classes.svg}>
-                <polygon points="0,100 50,00, 100,100" className={classes.polygon} />
-              </svg>
+              <Typography variant="h5" gutterBottom>Saving to Files</Typography>
+              <Divider className={classes.dividerBelowTitle}/>
+              <FormControlLabel control={ <Switch checked={true} onChange={this.handleChange('checkedA')} color="primary" /> } label="Saving to files" />
+              <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} value='videosurveillance.webcamp-clip-' fullWidth onChange={this.handleChange('name')} margin="normal" />
+              <FormControl component="fieldset" className={classes.formControl}>
+                <FormLabel component="legend">Split files by</FormLabel>
+                <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={this.state.value} onChange={this.handleChange}>
+                  <FormControlLabel value="alert-once" control={<Radio />} label="Motion detected" />
+                  <FormControlLabel value="keep-alerting" control={<Radio />} label="File size" />
+                  <FormControlLabel value="keep-alerting" control={<Radio />} label="Interval" />
+                </RadioGroup>
+              </FormControl>
             </Paper>
 
             <Paper elevation={1} className={classes.paperSettingColumn}>
-              <Typography variant="h5" gutterBottom> About </Typography>
-              <Divider />
-              <Typography variant="body1" gutterBottom>
-                asdffasdfasdf asdf
-              </Typography>
+              <Typography variant="h5" gutterBottom>About</Typography>
+              <Divider className={classes.dividerBelowTitle}/>
+              <Typography variant="body1"> This Web application is made possible with the following awesome projects: </Typography>
+              <ul className={classes.ul}>
+                <li><Typography variant="body1"><a href='https://wordpress.com/' target='_blank' className={classes.a}>Wordpress</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://reactjs.org/' target='_blank' className={classes.a}>React</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://redux.js.org/' target='_blank' className={classes.a}>Redux</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://material-ui.com' target='_blank' className={classes.a}>Material UI</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://docs.opencv.org/3.4/index.html' target='_blank' className={classes.a}>OpenCV.js</a></Typography></li>
+              </ul>
+              <Typography variant="body1" gutterBottom>You can contact us for bugs, feedback, feature requests or something else through following channels: </Typography>
+              <ul className={classes.ul}>
+                <li><Typography variant="body1"><a href='mailto:contact@videosurveillance.webcam' className={classes.a}>Email</a></Typography></li>
+              </ul>
+              <Typography variant="caption" gutterBottom><a href='/terms-of-service' target='_blank' className={classes.a}>Terms of Service</a>, <a href='/privacy-policy' target='_blank' className={classes.a}>Privacy Policy</a>, and <a href='/cookie-policy' target='_blank' className={classes.a}>Cookie Policy</a></Typography>
             </Paper>
           </Paper>
         </Slide>

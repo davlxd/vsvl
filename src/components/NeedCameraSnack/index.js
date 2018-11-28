@@ -10,7 +10,7 @@ const styles = theme => ({
   close: {
     padding: theme.spacing.unit / 2,
   },
-});
+})
 
 class NeedCameraSnack extends Component {
   componentDidMount() {
