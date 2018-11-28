@@ -20,7 +20,7 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import SettingsIcon from '@material-ui/icons/Settings'
 
-import { ALTER_SETTING, } from '../../actions'
+import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, } from '../../actions'
 
 
 const styles = theme => ({
@@ -86,9 +86,17 @@ const styles = theme => ({
   },
 })
 
-class SettingsSlider extends React.Component {
+class SettingsSlider extends Component {
   state = {
     checked: false,
+  }
+
+  componentDidMount() {
+    this.props.recoverSettingsFromWebStorage(JSON.parse(localStorage.getItem('settings')))
+  }
+
+  componentDidUpdate(prevProps) {
+    localStorage.setItem('settings', JSON.stringify(this.props.settings))
   }
 
   handleSettingButtonClick = () => {
@@ -192,12 +200,16 @@ SettingsSlider.propTypes = {
 
 
 const mapStateToProps = (state) => ({
-  ...state.settings
+  ...state.settings,
+  settings: state.settings
 })
 
 const mapDispatchToProps = (dispatch) => ({
   alterSettings: (name, value) => {
     dispatch(ALTER_SETTING(name, value))
+  },
+  recoverSettingsFromWebStorage: value => {
+    dispatch(RECOVER_SETTINGS_FROM_WEB_STORAGE(value))
   }
 })
 

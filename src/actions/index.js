@@ -15,6 +15,11 @@ export const APPLY_VIDEO_PARAMS_AS_SETTINGS = obj => ({
   obj
 })
 
+export const RECOVER_SETTINGS_FROM_WEB_STORAGE = value => ({
+  type: 'RECOVER_SETTINGS_FROM_WEB_STORAGE',
+  value
+})
+
 
 export const USER_CLICK_CONSENT = {
   type: 'USER_CLICK_CONSENT'

@@ -9,7 +9,7 @@ const initialState = {
   alertingOnMotionStrategy: 'alert-once',
 
   savingToFiles: false,
-  savingToFilesPrefix: 'videosurveillance.webcamp-clip-',
+  savingToFilesPrefix: 'videosurveillance.webcamp-vclip-',
   savingToFilesOnlyMotionDetected: true,
   savingToFilesStrategy: 'file-size',
   splitFileSize: '10',
@@ -23,6 +23,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         ...action.obj
+      }
+    case 'RECOVER_SETTINGS_FROM_WEB_STORAGE':
+      return {
+        ...state,
+        ...action.value
       }
     case 'ALTER_SETTING':
       return {
