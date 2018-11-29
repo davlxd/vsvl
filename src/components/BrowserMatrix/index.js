@@ -33,7 +33,7 @@ class BrowserMatrix extends Component {
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <section>
-            <article>asdfasdfasdfasdfafsf</article>
+            <article>Comming soon</article>
           </section>
         </Paper>
       </div>

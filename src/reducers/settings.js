@@ -1,5 +1,5 @@
 const initialState = {
-  playBackStyle: 'original',
+  playbackDisplayMode: 'extend',
   frameRate: 10,
   frameRatio: 1.3,
   width: null,

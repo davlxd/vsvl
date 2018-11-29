@@ -44,7 +44,7 @@ class Test extends Component {
     this.videoRef = React.createRef()
     this.canvasRef = React.createRef()
     this.state = {
-      playBackStyle: 'original',
+      playbackDisplayMode: 'original',
       frameRatio: 1.3,
       abort: false, //TEMP
     }
@@ -232,10 +232,10 @@ class Test extends Component {
 
   render() {
     const { classes } = this.props
-    const { playBackStyle, frameRatio, width, height } = this.state
+    const { playbackDisplayMode, frameRatio, width, height } = this.state
     return (
       <div>
-        <video style={{[playBackStyle === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} width={width} height={height} className={classes.bgvOriginal} ref={this.videoRef} loop autoPlay>
+        <video style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} width={width} height={height} className={classes.bgvOriginal} ref={this.videoRef} loop autoPlay>
         </video>
         <canvas id='canvasOutput' ref={this.canvasRef} width={width} height={height}></canvas>
       </div>

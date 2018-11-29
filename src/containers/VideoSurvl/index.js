@@ -20,8 +20,17 @@ const styles = theme => ({
     zIndex: '-100',
     transform: 'translateX(-50%) translateY(-50%)',
   },
-  bgvExtend: {
+  bgvExtendHorizontal: {
     position: 'fixed',
+    width: '100%',
+    top: '50%',
+    left: '50%',
+    zIndex: '-100',
+    transform: 'translateX(-50%) translateY(-50%)',
+  },
+  bgvExtendVertical: {
+    position: 'fixed',
+    height: '100%',
     top: '50%',
     left: '50%',
     zIndex: '-100',
@@ -187,13 +196,21 @@ class VideoSurvl extends Component {
   }
 
   render() {
-    const { classes, playBackStyle, frameRatio, width, height } = this.props
+    const { classes, playbackDisplayMode, frameRatio, width, height } = this.props
     const { putOnNeedCameraSnack } = this.state
+
+    let streamingStyleClass = classes.bgvFullScreen
+    if (playbackDisplayMode === 'original') {
+      streamingStyleClass = classes.bgvOriginal
+    }
+    if (playbackDisplayMode === 'extend') {
+      streamingStyleClass = frameRatio > 1 ? classes.bgvExtendVertical : classes.bgvExtendHorizontal
+    }
     return (
       <div>
         <video style={{display: 'none'}} width={width} height={height} className={classes.bgvOriginal} ref={this.videoRef} loop autoPlay></video>
-        <canvas style={{[playBackStyle === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutput' ref={this.canvasRef} className={classes.bgvOriginal} width={width} height={height}></canvas>
-        {/* <canvas style={{[playBackStyle === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
+        <canvas id='canvasOutput' ref={this.canvasRef} className={streamingStyleClass} width={width} height={height}></canvas>
+        {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
         <NeedCameraSnack on={putOnNeedCameraSnack} off={() => {this.setState({putOnNeedCameraSnack: false})}}/>
       </div>
     )

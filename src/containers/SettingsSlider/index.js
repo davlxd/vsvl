@@ -36,11 +36,15 @@ const styles = theme => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  settingsIcon: {
+  settingsIconButton: {
+    background: 'rgba(255,255,255,0.2)',
     position: 'fixed',
     bottom: 0,
     left: '50%',
     zIndex: 2,
+  },
+  settingsIcon: {
+    // background: 'rgba(255,255,255,0.2)',
   },
   bigPaper: {
     background: 'rgba(255,255,255,0.5)',
@@ -128,12 +132,14 @@ class SettingsSlider extends Component {
   }
 
   handleChange = name => event => {
+    console.log(name, event.target.value)
     this.props.alterSettings(name, event.target.value)
   }
 
   render() {
     const {
       classes,
+      playbackDisplayMode,
       alertingOnMotion,
       alertingOnMotionStrategy,
       savingToFiles,
@@ -147,14 +153,22 @@ class SettingsSlider extends Component {
 
     return (
       <div className={classes.root}>
-        <IconButton key="settings" aria-label="ShowSettings" className={classes.settingsIcon} onClick={this.handleSettingButtonClick}>
-          <SettingsIcon />
+        <IconButton key="settings" aria-label="ShowSettings" className={classes.settingsIconButton} onClick={this.handleSettingButtonClick}>
+          <SettingsIcon color="action" fontSize="large" className={classes.settingsIcon}/>
         </IconButton>
         <Slide direction="up" in={checked} mountOnEnter unmountOnExit>
           <Paper elevation={0} className={classes.bigPaper}>
             <Paper elevation={1} className={classes.paperSettingColumn}>
-              <Typography variant="h5" gutterBottom> Live Feed </Typography>
+              <Typography variant="h5" gutterBottom> Playback </Typography>
               <Divider className={classes.dividerBelowTitle}/>
+              <FormControl component="fieldset" className={classes.formControl}>
+                <FormLabel component="legend" className={classes.createANewFileLabel}>Display mode</FormLabel>
+                <RadioGroup aria-label="DisplayMode" name="playback-display-mode" className={classes.radioGroup} value={playbackDisplayMode} onChange={this.handleChange('playbackDisplayMode')}>
+                  <FormControlLabel value="original" className={classes.radioLabel} control={<Radio color="primary"/>} label="Original" />
+                  <FormControlLabel value="extend" className={classes.radioLabel}  control={<Radio color="primary"/>} label="Extend" />
+                  <FormControlLabel value="fullscreen" className={classes.radioLabel}  control={<Radio color="primary"/>} label="Fullscreen" />
+                </RadioGroup>
+              </FormControl>
               <FormControlLabel control={ <Switch checked={alertingOnMotion} onChange={this.handleToggle('alertingOnMotion')} color="primary" /> } label="Alert when motion detected" />
               <FormControl component="fieldset" className={classes.formControl} disabled={!alertingOnMotion}>
                 <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={alertingOnMotion? alertingOnMotionStrategy : null} onChange={this.handleChange('alertingOnMotionStrategy')}>

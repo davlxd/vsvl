@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import Tooltip from '@material-ui/core/Tooltip'
 
 import { withStyles } from '@material-ui/core/styles'
 
@@ -36,7 +37,9 @@ class MotionIndicator extends Component {
     const { classes, motioning } = this.props
 
     return (
-      <DirectionsRunIcon className={classes.motionIcon} style={{display: motioning ? null : 'none'}} color="action" fontSize="large"/>
+      <Tooltip title="Motion detected">
+        <DirectionsRunIcon className={classes.motionIcon} style={{display: motioning ? null : 'none'}} color="action" fontSize="large"/>
+      </Tooltip>
     )
   }
 }
