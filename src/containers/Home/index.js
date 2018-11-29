@@ -6,6 +6,7 @@ import ConsentDialog from '../ConsentDialog'
 import VideoSurvl from '../VideoSurvl'
 import SettingsSlider from '../SettingsSlider'
 import MotionIndicator from '../MotionIndicator'
+import MotionAlert from '../MotionAlert'
 
 import { APPLY_WEB_STORAGE_VALUE, } from '../../actions'
 
@@ -40,6 +41,7 @@ class Home extends Component {
         { consent ? <VideoSurvl /> : null }
         <MotionIndicator />
         <SettingsSlider />
+        <MotionAlert />
       </div>
     )
   }
