@@ -10,9 +10,12 @@ const styles = theme => ({
   close: {
     padding: theme.spacing.unit / 2,
   },
+  a: {
+    color: 'inherit'
+  },
 })
 
-class NeedCameraSnack extends Component {
+class BrowserCannotSavingFilesSnack extends Component {
   componentDidMount() {
     this.setState({
       open: this.props.on
@@ -37,7 +40,7 @@ class NeedCameraSnack extends Component {
 
   handleClose = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
 
     this.setState({ open: false })
@@ -59,7 +62,7 @@ class NeedCameraSnack extends Component {
           ContentProps={{
             'aria-describedby': 'message-id',
           }}
-          message={<span id="message-id">We need Webcam access to work. To grant the access, click the icon to the left of the web address.</span>}
+          message={<span id="message-id">Only Opera and Chrome support this, please check <a href='/browser-matrix' target='_blank' className={classes.a}>Browser Matrix</a> for details.</span>}
           action={[
             <Button key="undo" color="secondary" size="small" onClick={this.handleClose}>
               GOT IT
@@ -80,10 +83,10 @@ class NeedCameraSnack extends Component {
   }
 }
 
-NeedCameraSnack.propTypes = {
+BrowserCannotSavingFilesSnack.propTypes = {
   classes: PropTypes.object.isRequired,
   on: PropTypes.bool.isRequired,
   off: PropTypes.func.isRequired,
 }
 
-export default withStyles(styles)(NeedCameraSnack)
+export default withStyles(styles)(BrowserCannotSavingFilesSnack)

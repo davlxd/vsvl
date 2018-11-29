@@ -122,7 +122,7 @@ class VideoSurvl extends Component {
 
     this.fgbg.apply(this.frame, this.fgmask)
     // cv.imshow('canvasOutputMotion', this.fgmask)
-    console.log(cv.countNonZero(this.fgmask)) // TODO with a threshold then problem solved
+    // console.log(cv.countNonZero(this.fgmask)) // TODO with a threshold then problem solved
 
     if (cv.countNonZero(this.fgmask) > MOTION_THRESHOLD) {
       motionDetectedNow()
@@ -194,7 +194,7 @@ class VideoSurvl extends Component {
         <video style={{display: 'none'}} width={width} height={height} className={classes.bgvOriginal} ref={this.videoRef} loop autoPlay></video>
         <canvas style={{[playBackStyle === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutput' ref={this.canvasRef} className={classes.bgvOriginal} width={width} height={height}></canvas>
         {/* <canvas style={{[playBackStyle === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
-        <NeedCameraSnack on={putOnNeedCameraSnack}/>
+        <NeedCameraSnack on={putOnNeedCameraSnack} off={() => {this.setState({putOnNeedCameraSnack: false})}}/>
       </div>
     )
   }

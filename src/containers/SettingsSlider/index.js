@@ -20,6 +20,10 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import SettingsIcon from '@material-ui/icons/Settings'
 
+import browser from 'browser-detect'
+
+import BrowserCannotSavingFilesSnack from '../../components/BrowserCannotSavingFilesSnack'
+
 import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, } from '../../actions'
 
 
@@ -89,6 +93,7 @@ const styles = theme => ({
 class SettingsSlider extends Component {
   state = {
     checked: false,
+    putOnBrowserCannotSavingFilesSnack: false,
   }
 
   componentDidMount() {
@@ -107,6 +112,21 @@ class SettingsSlider extends Component {
     this.props.alterSettings(name, event.target.checked)
   }
 
+  handleToggleSavingToFiles = event => {
+    const b = browser()
+    if (b.name === 'chrome' && b.versionNumber > 52) {
+      return this.handleToggle('savingToFiles')(event)
+    }
+
+    if (b.name === 'opera' && b.versionNumber > 39) {
+      return this.handleToggle('savingToFiles')(event)
+    }
+
+    this.setState({
+      putOnBrowserCannotSavingFilesSnack: true
+    })
+  }
+
   handleChange = name => event => {
     this.props.alterSettings(name, event.target.value)
   }
@@ -123,7 +143,7 @@ class SettingsSlider extends Component {
       splitFileSize,
       splitFileTime,
      } = this.props
-    const { checked } = this.state
+    const { checked, putOnBrowserCannotSavingFilesSnack } = this.state
 
     return (
       <div className={classes.root}>
@@ -147,7 +167,7 @@ class SettingsSlider extends Component {
             <Paper elevation={1} className={classes.paperSettingColumn}>
               <Typography variant="h5" gutterBottom>Saving to Files</Typography>
               <Divider className={classes.dividerBelowTitle}/>
-              <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggle('savingToFiles')} color="primary" /> } label="Saving to files" />
+              <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggleSavingToFiles} color="primary" /> } label="Saving to files" />
               <FormControlLabel disabled={!savingToFiles} control={ <Checkbox checked={savingToFiles ? savingToFilesOnlyMotionDetected : false} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color="primary" /> } label="Saving only when motion detected" />
               <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} disabled={!savingToFiles} value={savingToFiles? savingToFilesPrefix: ''} fullWidth onChange={this.handleChange('savingToFilesPrefix')} margin="normal" />
               <FormControl component="fieldset" className={classes.formControl} disabled={!savingToFiles}>
@@ -180,6 +200,7 @@ class SettingsSlider extends Component {
                 <li><Typography variant="body1"><a href='https://redux.js.org/' target='_blank' className={classes.a}>Redux</a></Typography></li>
                 <li><Typography variant="body1"><a href='https://material-ui.com' target='_blank' className={classes.a}>Material UI</a></Typography></li>
                 <li><Typography variant="body1"><a href='https://docs.opencv.org/3.4/index.html' target='_blank' className={classes.a}>OpenCV.js</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://github.com/jimmywarting/StreamSaver.js' target='_blank' className={classes.a}>StreamSaver.js</a></Typography></li>
               </ul>
               <Typography variant="body1" gutterBottom>You can contact us for bugs, feedback, feature requests or something else through following channels: </Typography>
               <ul className={classes.ul} style={{flexGrow: 1}}>
@@ -189,6 +210,7 @@ class SettingsSlider extends Component {
             </Paper>
           </Paper>
         </Slide>
+        <BrowserCannotSavingFilesSnack on={putOnBrowserCannotSavingFilesSnack} off={() => {this.setState({putOnBrowserCannotSavingFilesSnack: false})}}/>
       </div>
     )
   }
