@@ -92,8 +92,8 @@ class ConsentDialog extends Component {
             </DialogContentText>
             <DialogContentText variant='body1' className={classes.dialogParagraph}>
               This Web application also store cookies on your device.
-              Please read our <a href='/terms-of-service' target='_blank' className={classes.a}>Terms of Service</a>,
-              <a href='/privacy-policy' target='_blank' className={classes.a}>Privacy Policy</a> and <a href='/cookie-policy' target='_blank' className={classes.a}>Cookies Policy</a> for detailed explanation.
+              Please read our <a href='/terms-of-service' target='_blank' rel="noopener noreferrer" className={classes.a}>Terms of Service</a>,
+              <a href='/privacy-policy' target='_blank' rel="noopener noreferrer" className={classes.a}>Privacy Policy</a> and <a href='/cookie-policy' target='_blank' className={classes.a}>Cookies Policy</a> for detailed explanation.
             </DialogContentText>
             <FormControlLabel
               control={

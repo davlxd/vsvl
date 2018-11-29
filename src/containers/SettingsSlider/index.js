@@ -209,18 +209,18 @@ class SettingsSlider extends Component {
               <Divider className={classes.dividerBelowTitle}/>
               <Typography variant="body1"> This Web application is made possible with the following awesome projects: </Typography>
               <ul className={classes.ul}>
-                <li><Typography variant="body1"><a href='https://wordpress.com/' target='_blank' className={classes.a}>Wordpress</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://reactjs.org/' target='_blank' className={classes.a}>React</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://redux.js.org/' target='_blank' className={classes.a}>Redux</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://material-ui.com' target='_blank' className={classes.a}>Material UI</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://docs.opencv.org/3.4/index.html' target='_blank' className={classes.a}>OpenCV.js</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://github.com/jimmywarting/StreamSaver.js' target='_blank' className={classes.a}>StreamSaver.js</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://wordpress.com/' target='_blank' rel="noopener noreferrer" className={classes.a}>Wordpress</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://reactjs.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>React</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://redux.js.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>Redux</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://material-ui.com' target='_blank' rel="noopener noreferrer" className={classes.a}>Material UI</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://docs.opencv.org/3.4/index.html' target='_blank' rel="noopener noreferrer" className={classes.a}>OpenCV.js</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://github.com/jimmywarting/StreamSaver.js' target='_blank' rel="noopener noreferrer" className={classes.a}>StreamSaver.js</a></Typography></li>
               </ul>
               <Typography variant="body1" gutterBottom>You can contact us for bugs, feedback, feature requests or something else through following channels: </Typography>
               <ul className={classes.ul} style={{flexGrow: 1}}>
                 <li><Typography variant="body1"><a href='mailto:contact@videosurveillance.webcam' className={classes.a}>Email</a></Typography></li>
               </ul>
-              <Typography variant="caption" gutterBottom><a href='/terms-of-service' target='_blank' className={classes.a}>Terms of Service</a>, <a href='/privacy-policy' target='_blank' className={classes.a}>Privacy Policy</a>, and <a href='/cookie-policy' target='_blank' className={classes.a}>Cookie Policy</a></Typography>
+              <Typography variant="caption" gutterBottom><a href='/terms-of-service' target='_blank' rel="noopener noreferrer" className={classes.a}>Terms of Service</a>, <a href='/privacy-policy' target='_blank' rel="noopener noreferrer" className={classes.a}>Privacy Policy</a>, and <a href='/cookie-policy' target='_blank' rel="noopener noreferrer" className={classes.a}>Cookie Policy</a></Typography>
             </Paper>
           </Paper>
         </Slide>

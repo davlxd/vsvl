@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 
 import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE } from '../../actions'
 import NeedCameraSnack from '../../components/NeedCameraSnack'
+import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 
 const moment = require('moment')
 
@@ -60,9 +61,11 @@ class VideoSurvl extends Component {
     this.frame = null
     this.fgmask = null
     this.fgbg = null
+    this.slowLoadingSnackTimeoutHandle = null
 
     this.state = {
       putOnNeedCameraSnack: false,
+      putOnSlowLoadingSnack: false,
       abort: false, //TEMP
     }
   }
@@ -83,9 +86,17 @@ class VideoSurvl extends Component {
         width
       })
 
+      if (this.slowLoadingSnackTimeoutHandle != null) {
+        clearTimeout(this.slowLoadingSnackTimeoutHandle)
+        this.slowLoadingSnackTimeoutHandle = null
+      }
       this.opencvProcessing()
 
     }).catch(err => {
+      if (this.slowLoadingSnackTimeoutHandle != null) {
+        clearTimeout(this.slowLoadingSnackTimeoutHandle)
+        this.slowLoadingSnackTimeoutHandle = null
+      }
       this.setState({
         putOnNeedCameraSnack: true
       })
@@ -178,6 +189,11 @@ class VideoSurvl extends Component {
 
   componentDidMount() {
     this.initiateCamera()
+    this.slowLoadingSnackTimeoutHandle = setTimeout(() => {
+      this.setState({
+        putOnSlowLoadingSnack: true
+      })
+    }, 4000)
   }
 
   componentWillUnmount() {
@@ -197,7 +213,7 @@ class VideoSurvl extends Component {
 
   render() {
     const { classes, playbackDisplayMode, frameRatio, width, height } = this.props
-    const { putOnNeedCameraSnack } = this.state
+    const { putOnNeedCameraSnack, putOnSlowLoadingSnack } = this.state
 
     let streamingStyleClass = classes.bgvFullScreen
     if (playbackDisplayMode === 'original') {
@@ -211,7 +227,8 @@ class VideoSurvl extends Component {
         <video style={{display: 'none'}} width={width} height={height} className={classes.bgvOriginal} ref={this.videoRef} loop autoPlay></video>
         <canvas id='canvasOutput' ref={this.canvasRef} className={streamingStyleClass} width={width} height={height}></canvas>
         {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
-        <NeedCameraSnack on={putOnNeedCameraSnack} off={() => {this.setState({putOnNeedCameraSnack: false})}}/>
+        <NeedCameraSnack on={putOnNeedCameraSnack} off={() => { this.setState({putOnNeedCameraSnack: false}) }}/>
+        <SlowLoadingSnack on={putOnSlowLoadingSnack} off={() => { this.setState({putOnSlowLoadingSnack: false}); this.slowLoadingSnackTimeoutHandle = null; }}/>
       </div>
     )
   }
