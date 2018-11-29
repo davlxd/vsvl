@@ -26,7 +26,7 @@ const styles = theme => ({
     animationName: 'flash',
     animationTimefunction: 'linear',
     animationIterationCount: 'infinite',
-    animationDuration: '2.89s', // this comes from audio length
+    animationDuration: '2s',
     opacity: 0,
   },
   motionIcon: {
@@ -65,19 +65,17 @@ class MotionAlert extends Component {
       this.setState({
         animationOn: true,
       })
+      this.audio.loop = false
       this.audio.play()
-    }
-
-    const sound = () => {
-      const { motioning, alertingOnMotion, alertingOnMotionStrategy } = this.props
-      this.audio.play()
-      if (alertingOnMotion && motioning && alertingOnMotionStrategy === 'keep-alerting') {
-        setTimeout(sound, 1000)
-      }
     }
 
     if (alertingOnMotion && motioning && alertingOnMotionStrategy === 'keep-alerting') {
-      setTimeout(sound, 0)
+      this.audio.loop = true
+      this.audio.play()
+    }
+
+    if (prevProps.motioning && !motioning) {
+      this.audio.loop = false
     }
   }
 
