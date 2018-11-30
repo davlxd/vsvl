@@ -20,12 +20,11 @@ import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import SettingsIcon from '@material-ui/icons/Settings'
 
-import browser from 'browser-detect'
-
 import BrowserCannotSavingFilesSnack from '../../components/BrowserCannotSavingFilesSnack'
 
 import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, } from '../../actions'
 
+const { supported, } = window.streamSaver
 
 const styles = theme => ({
   root: {
@@ -118,12 +117,7 @@ class SettingsSlider extends Component {
   }
 
   handleToggleSavingToFiles = event => {
-    const b = browser()
-    if (b.name === 'chrome' && b.versionNumber > 52) {
-      return this.handleToggle('savingToFiles')(event)
-    }
-
-    if (b.name === 'opera' && b.versionNumber > 39) {
+    if (supported) {
       return this.handleToggle('savingToFiles')(event)
     }
 
@@ -133,7 +127,6 @@ class SettingsSlider extends Component {
   }
 
   handleChange = name => event => {
-    console.log(name, event.target.value)
     this.props.alterSettings(name, event.target.value)
   }
 
@@ -186,21 +179,22 @@ class SettingsSlider extends Component {
               <FormControlLabel disabled={!savingToFiles} control={ <Checkbox checked={savingToFiles ? savingToFilesOnlyMotionDetected : false} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color="primary" /> } label="Saving only when motion detected" />
               <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} disabled={!savingToFiles} value={savingToFiles? savingToFilesPrefix: ''} fullWidth onChange={this.handleChange('savingToFilesPrefix')} margin="normal" />
               <FormControl component="fieldset" className={classes.formControl} disabled={!savingToFiles}>
-                <FormLabel component="legend" className={classes.createANewFileLabel}>Create a new file when</FormLabel>
+                <FormLabel component="legend" className={classes.createANewFileLabel}>Create a new file</FormLabel>
                 <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={savingToFiles? savingToFilesStrategy: null} onChange={this.handleChange('savingToFilesStrategy')}>
-                  <FormControlLabel value="motion-detected" className={classes.radioLabel} control={<Radio color="primary"/>} label="motion detected" />
-                  <FormControlLabel value="file-size"className={classes.radioLabel}  control={<Radio color="primary"/>} label="the file size exceeds" />
-                  <FormControlLabel value="time"className={classes.radioLabel}  control={<Radio color="primary"/>} label="based on time" />
+                  <FormControlLabel value="motion-detected" className={classes.radioLabel} control={<Radio color="primary"/>} label="when motion detected" />
+                  {/*<FormControlLabel value="file-size"className={classes.radioLabel}  control={<Radio color="primary"/>} label="the file size exceeds" /> */}
+                  <FormControlLabel value="time" className={classes.radioLabel}  control={<Radio color="primary"/>} label="on specific time" />
                 </RadioGroup>
               </FormControl>
               <TextField id="file-split-size" label="Size in MB" className={classes.fileSplitSizeTextField} style={{display: savingToFiles && savingToFilesStrategy === 'file-size' ? null : 'none'}} value={splitFileSize} onChange={this.handleChange('splitFileSize')} margin="none" />
               <FormControl className={classes.formControl} style={{display: savingToFiles && savingToFilesStrategy === 'time' ? null : 'none'}}>
                 <Select value={splitFileTime} onChange={this.handleChange('splitFileTime')} inputProps={{ name: 'split-file-name', id: 'split-file-name', }}>
-                  <MenuItem value='daily'>Daily</MenuItem>
-                  <MenuItem value='every-4-hours'>Every 4 hours</MenuItem>
-                  <MenuItem value='every-hour'>Every hour</MenuItem>
-                  <MenuItem value='every-30-min'>Every 30 min</MenuItem>
-                  <MenuItem value='every-10-min'>Every 10 min</MenuItem>
+                  <MenuItem value='on-the-1-min'>on the minute</MenuItem>
+                  <MenuItem value='on-the-2-min'>on the 2 min</MenuItem>
+                  <MenuItem value='on-the-5-min'>on the 5 min</MenuItem>
+                  <MenuItem value='on-the-10-min'>on the 10 min</MenuItem>
+                  <MenuItem value='on-the-30-min'>on the 30 min</MenuItem>
+                  <MenuItem value='on-the-hour'>on the hour</MenuItem>
                 </Select>
               </FormControl>
             </Paper>

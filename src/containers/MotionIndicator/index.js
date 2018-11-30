@@ -7,8 +7,6 @@ import { withStyles } from '@material-ui/core/styles'
 
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun'
 
-import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, } from '../../actions'
-
 
 const styles = theme => ({
   motionIcon: {

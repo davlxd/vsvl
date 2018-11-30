@@ -1,14 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import Tooltip from '@material-ui/core/Tooltip'
-
 import { withStyles } from '@material-ui/core/styles'
-
-import DirectionsRunIcon from '@material-ui/icons/DirectionsRun'
-
-import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, } from '../../actions'
-
 
 const styles = theme => ({
   root: {

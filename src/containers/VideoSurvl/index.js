@@ -9,7 +9,7 @@ import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 import onAndDelayOff from './on-and-delay-off'
 const moment = require('moment')
 
-const { createWriteStream, supported, version } = window.streamSaver
+const { createWriteStream, } = window.streamSaver
 
 
 const styles = theme => ({
@@ -53,9 +53,10 @@ const styles = theme => ({
 class VideoSurvl extends Component {
   constructor(props) {
     super(props)
-
     this.videoRef = React.createRef()
     this.canvasRef = React.createRef()
+
+    this.currentTimeIntervalHandle = null
 
     this.delayMotionGoneTimeoutHandle = null
     this.motionDetectCount = 0
@@ -63,6 +64,11 @@ class VideoSurvl extends Component {
     this.fgmask = null
     this.fgbg = null
     this.slowLoadingSnackTimeoutHandle = null
+
+    this.savingToFileOnGoing = false
+    this.savingToFileMediaRecorder = null
+    this.savingToFileChunks = null
+    this.savingToFileFileStreamWriter = null
 
     this.state = {
       putOnNeedCameraSnack: false,
@@ -88,12 +94,11 @@ class VideoSurvl extends Component {
       })
 
       this.cancelScheduledSlowLoadingSnack()
-
       this.delayOpenCVProcessing()
+      this.savingCanvasToFile()
 
     }).catch(err => {
       this.cancelScheduledSlowLoadingSnack()
-
       this.setState({
         putOnNeedCameraSnack: true
       })
@@ -188,13 +193,146 @@ class VideoSurvl extends Component {
     setTimeout(processVideo, 0);
   }
 
+  closeCurrentFile(recreate=true) {
+    console.log('!!!!!   Closing up')
+    if (this.savingToFileMediaRecorder == null && !this.savingToFileOnGoing) {
+      return
+    }
+    this.savingToFileMediaRecorder.stop()
+    setTimeout(
+      () => {
+        this.savingToFileChunks.then(evt => {
+          this.savingToFileFileStreamWriter.close()
+          this.savingToFileOnGoing = false
+          this.savingToFileMediaRecorder = null
+          if (recreate){
+            this.savingCanvasToFile()
+          }
+        })
+      }, 1000)
+  }
+
+  savingCanvasToFile() {
+    const { savingToFiles, frameRate, savingToFilesPrefix, } = this.props
+    if (!savingToFiles) {
+      return
+    }
+    if (this.savingToFileOnGoing) {
+      return
+    }
+    this.savingToFileOnGoing = true
+    console.log('!!!!!Kicking off a savingCanvasToFile')
+
+    const mediaStream = this.canvasRef.current.captureStream(frameRate)
+    this.savingToFileMediaRecorder = new MediaRecorder(mediaStream)
+    this.savingToFileChunks = Promise.resolve()
+    const fileReader = new FileReader()
+
+    const fileStream = createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`)
+    this.savingToFileFileStreamWriter = fileStream.getWriter()
+
+    this.savingToFileMediaRecorder.start()
+
+    // setTimeout(() => {
+    //   this.savingToFileMediaRecorder.pause()
+    // }, 2000)
+
+    // setTimeout(() => {
+    //   this.closeCurrentFile(false)
+    // }, 40000)
+
+
+    this.savingToFileMediaRecorder.onstart = () => {
+      console.log('---------------------onstart')
+    }
+    this.savingToFileMediaRecorder.onstop = () => {
+      console.log('---------------------onstop')
+    }
+    this.savingToFileMediaRecorder.onpause = () => {
+      console.log('---------------------onpause')
+    }
+    this.savingToFileMediaRecorder.onresume = () => {
+      console.log('---------------------onresume')
+    }
+    this.savingToFileMediaRecorder.ondataavailable = ({ data }) => {
+      console.log('---------------------ondataavailable')
+      this.savingToFileChunks = this.savingToFileChunks.then(() => new Promise(resolve => {
+        fileReader.onload = () => {
+          this.savingToFileFileStreamWriter.write(new Uint8Array(fileReader.result))
+          resolve()
+        }
+        fileReader.readAsArrayBuffer(data)
+      }))
+    }
+
+  }
+
   componentDidMount() {
     this.initiateCamera()
+    this.currentTimeIntervalHandle = setInterval(() => this.splitFileBasedOnTime(), 1000)
+
     this.slowLoadingSnackTimeoutHandle = setTimeout(() => {
       this.setState({
         putOnSlowLoadingSnack: true
       })
     }, 4000)
+  }
+
+  splitFileBasedOnTime() {
+    const s = Math.round(Date.now() / 1000)
+
+    if (this.savingToFileOnGoing && this.props.savingToFilesStrategy === 'time') {
+      let m = 60
+      switch (this.props.splitFileTime) {
+        case 'on-the-1-min': m = 60 * 1; break;
+        case 'on-the-2-min': m = 60 * 2; break;
+        case 'on-the-5-min': m = 60 * 5; break;
+        case 'on-the-10-min': m = 60 * 10; break;
+        case 'on-the-30-min': m = 60 * 30; break;
+        case 'on-the-hour': m = 60 * 60; break;
+        default: m = 60
+      }
+
+      if (s % m === 0) {
+        this.closeCurrentFile(true)
+      }
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      savingToFiles,
+      savingToFilesOnlyMotionDetected,
+      savingToFilesStrategy,
+      motioning,
+    } = this.props
+
+    const motionDetected = !prevProps.motioning && motioning
+    const motionGone = prevProps.motioning && !motioning
+
+    if (!prevProps.savingToFiles && savingToFiles) { // kick off a saving when user switch on
+      this.savingCanvasToFile()
+    }
+
+    if (prevProps.savingToFiles && !savingToFiles) {
+      this.closeCurrentFile(false)
+    }
+
+    if (this.savingToFileOnGoing && this.savingToFileMediaRecorder != null && savingToFilesOnlyMotionDetected && motionGone) {
+      this.savingToFileMediaRecorder.pause()
+    }
+
+    if (this.savingToFileOnGoing && this.savingToFileMediaRecorder != null && savingToFilesOnlyMotionDetected && motionDetected) {
+      this.savingToFileMediaRecorder.resume()
+    }
+
+    if (this.savingToFileOnGoing && savingToFilesStrategy === 'motion-detected' && motionGone) {
+      this.closeCurrentFile(false)
+    }
+
+    if (!this.savingToFileOnGoing && savingToFiles && savingToFilesStrategy === 'motion-detected' && motionDetected) {
+      this.savingCanvasToFile()
+    }
   }
 
   componentWillUnmount() {
@@ -209,6 +347,10 @@ class VideoSurvl extends Component {
     if (this.fgbg != null) {
       this.fgbg.delete()
       this.fgbg = null
+    }
+    if (this.currentTimeIntervalHandle != null) {
+      clearInterval(this.currentTimeIntervalHandle)
+      this.currentTimeIntervalHandle = null
     }
   }
 

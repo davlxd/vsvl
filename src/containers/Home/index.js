@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
 
 import ConsentDialog from '../ConsentDialog'
 import VideoSurvl from '../VideoSurvl'
@@ -11,16 +10,7 @@ import MotionAlert from '../MotionAlert'
 import { APPLY_WEB_STORAGE_VALUE, } from '../../actions'
 
 
-const styles = theme => ({
-})
-
-const bgHeight = () => window.innerHeight
-
 class Home extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   componentDidMount() {
     this.loadWebStorageValue()
   }
@@ -34,7 +24,7 @@ class Home extends Component {
 
 
   render() {
-    const { classes, consent, } = this.props
+    const { consent, } = this.props
     return (
       <div>
         <ConsentDialog />
@@ -57,9 +47,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
 })
 
-export default withStyles(styles)(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Home)
-)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Home)

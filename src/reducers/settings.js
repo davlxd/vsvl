@@ -9,11 +9,11 @@ const initialState = {
   alertingOnMotionStrategy: 'alert-once',
 
   savingToFiles: false,
-  savingToFilesPrefix: 'videosurveillance.webcamp-vclip-',
+  savingToFilesPrefix: 'videosurveillance.webcamp-vclip',
   savingToFilesOnlyMotionDetected: true,
-  savingToFilesStrategy: 'file-size',
+  savingToFilesStrategy: 'time',
   splitFileSize: '10',
-  splitFileTime: 'every-hour',
+  splitFileTime: 'on-the-10-min',
 }
 
 

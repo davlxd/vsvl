@@ -34,10 +34,6 @@ const styles = theme => ({
 })
 
 class BrowserMatrix extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   componentWillMount() {
   }
 
