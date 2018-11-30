@@ -213,13 +213,17 @@ class VideoSurvl extends Component {
   }
 
   savingCanvasToFile() {
-    const { savingToFiles, frameRate, savingToFilesPrefix, } = this.props
+    const { savingToFiles, frameRate, savingToFilesPrefix, savingToFilesOnlyMotionDetected, motioning } = this.props
     if (!savingToFiles) {
       return
     }
     if (this.savingToFileOnGoing) {
       return
     }
+    if (savingToFilesOnlyMotionDetected && !motioning) {
+      return
+    }
+
     this.savingToFileOnGoing = true
     console.log('!!!!!Kicking off a savingCanvasToFile')
 
@@ -331,6 +335,14 @@ class VideoSurvl extends Component {
     }
 
     if (!this.savingToFileOnGoing && savingToFiles && savingToFilesStrategy === 'motion-detected' && motionDetected) {
+      this.savingCanvasToFile()
+    }
+
+    if (!this.savingToFileOnGoing && savingToFiles && savingToFilesOnlyMotionDetected && motionDetected) {
+      this.savingCanvasToFile()
+    }
+
+    if (!this.savingToFileOnGoing && savingToFiles && prevProps.savingToFilesOnlyMotionDetected && !savingToFilesOnlyMotionDetected) {
       this.savingCanvasToFile()
     }
   }
