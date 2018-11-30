@@ -87,18 +87,13 @@ class VideoSurvl extends Component {
         width
       })
 
-      if (this.slowLoadingSnackTimeoutHandle != null) {
-        clearTimeout(this.slowLoadingSnackTimeoutHandle)
-        this.slowLoadingSnackTimeoutHandle = null
-      }
+      this.cancelScheduledSlowLoadingSnack()
 
       this.delayOpenCVProcessing()
 
     }).catch(err => {
-      if (this.slowLoadingSnackTimeoutHandle != null) {
-        clearTimeout(this.slowLoadingSnackTimeoutHandle)
-        this.slowLoadingSnackTimeoutHandle = null
-      }
+      this.cancelScheduledSlowLoadingSnack()
+
       this.setState({
         putOnNeedCameraSnack: true
       })
@@ -139,14 +134,22 @@ class VideoSurvl extends Component {
     }
   }
 
-  delayOpenCVProcessing() {
+  delayOpenCVProcessing(delayInMS = 3000) {
+    delayInMS = delayInMS + 1000
     if (typeof window.cv !== 'undefined') {
       return this.openCVProcessing()
     }
     this.setState({ putOnSlowLoadingSnack: true })
     setTimeout(() => {
-      this.delayOpenCVProcessing()
-    }, 4000)
+      this.delayOpenCVProcessing(delayInMS / 2)
+    }, delayInMS)
+  }
+
+  cancelScheduledSlowLoadingSnack() {
+    if (this.slowLoadingSnackTimeoutHandle != null) {
+      clearTimeout(this.slowLoadingSnackTimeoutHandle)
+      this.slowLoadingSnackTimeoutHandle = null
+    }
   }
 
   openCVProcessing() {
