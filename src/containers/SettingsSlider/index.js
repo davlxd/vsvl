@@ -50,6 +50,7 @@ const styles = theme => ({
     background: 'rgba(255,255,255,0.5)',
     zIndex: 1,
     width: '90%',
+    maxWidth: theme.spacing.unit * 40 * 3 * 1.2,
     maxHeight: '90%',
     overflow: 'auto',
     padding: theme.spacing.unit * 2,

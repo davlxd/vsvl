@@ -31,9 +31,6 @@ class GenericSnack extends Component {
     open: false,
   }
 
-  handleClick = () => {
-    this.setState({ open: true })
-  }
 
   handleClose = (event, reason) => {
     if (reason === 'clickaway') {

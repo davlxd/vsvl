@@ -14,7 +14,7 @@ const styles = theme => ({
   motionIcon: {
     position: 'fixed',
     bottom: theme.spacing.unit * 10,
-    right: theme.spacing.unit * 3,
+    right: theme.spacing.unit * 2,
     zIndex: 2,
     animation: 'flash linear 2s infinite',
   },

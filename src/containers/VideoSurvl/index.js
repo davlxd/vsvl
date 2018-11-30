@@ -6,6 +6,7 @@ import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE } from '..
 import NeedCameraSnack from '../../components/NeedCameraSnack'
 import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 
+import onAndDelayOff from './on-and-delay-off'
 const moment = require('moment')
 
 const { createWriteStream, supported, version } = window.streamSaver
@@ -90,7 +91,8 @@ class VideoSurvl extends Component {
         clearTimeout(this.slowLoadingSnackTimeoutHandle)
         this.slowLoadingSnackTimeoutHandle = null
       }
-      this.opencvProcessing()
+
+      this.delayOpenCVProcessing()
 
     }).catch(err => {
       if (this.slowLoadingSnackTimeoutHandle != null) {
@@ -111,38 +113,24 @@ class VideoSurvl extends Component {
     const MOTION_GONE_DELAY = 4000
     const MOTION_DETECT_EVERY_N_FRAME = 3
 
-    const motionDetectedNow = () => {
-      if (!this.props.motioning) {
-        this.props.motionDetected()
-      }
-      if (this.delayMotionGoneTimeoutHandle != null) {
-        clearTimeout(this.delayMotionGoneTimeoutHandle)
-        this.delayMotionGoneTimeoutHandle = null
-      }
-    }
-
-    const motionNotDetectedNow = () => {
-      if (!this.props.motioning) {
-        return
-      }
-      if (this.delayMotionGoneTimeoutHandle == null) {
-        this.delayMotionGoneTimeoutHandle = setTimeout(() => {
-          this.delayMotionGoneTimeoutHandle = null
-          if (this.props.motioning) {
-            this.props.motionGone()
-          }
-        }, MOTION_GONE_DELAY)
-      }
-    }
+    const { on: motionDetectedNow , off: motionNotDetectedNow } = onAndDelayOff(
+      () => !this.props.motioning,  // funcOnPreq
+      () => this.props.motionDetected(),  // funcOn
+      () => this.props.motioning,  // funcOffPreq
+      () => this.props.motionGone(),  // funcOff
+      handleValue => this.delayMotionGoneTimeoutHandle = handleValue,  // delayOffTimeoutHandleSetter
+      () => this.delayMotionGoneTimeoutHandle,  // delayOffTimeoutHandleGetter
+      MOTION_GONE_DELAY,  // DELAY_IN_MS
+    )
 
     this.motionDetectCount = this.motionDetectCount >= 100 ? 0 : this.motionDetectCount + 1
-    if (this.motionDetectCount % 3 !== 0) {
+    if (this.motionDetectCount % MOTION_DETECT_EVERY_N_FRAME !== 0) {
       return
     }
 
     this.fgbg.apply(this.frame, this.fgmask)
     // cv.imshow('canvasOutputMotion', this.fgmask)
-    // console.log(cv.countNonZero(this.fgmask)) // TODO with a threshold then problem solved
+    // console.log(cv.countNonZero(this.fgmask))
 
     if (cv.countNonZero(this.fgmask) > MOTION_THRESHOLD) {
       motionDetectedNow()
@@ -151,7 +139,17 @@ class VideoSurvl extends Component {
     }
   }
 
-  opencvProcessing() {
+  delayOpenCVProcessing() {
+    if (typeof window.cv !== 'undefined') {
+      return this.openCVProcessing()
+    }
+    this.setState({ putOnSlowLoadingSnack: true })
+    setTimeout(() => {
+      this.delayOpenCVProcessing()
+    }, 4000)
+  }
+
+  openCVProcessing() {
     const { width, height, frameRate } = this.props
     const cv = window.cv
 
