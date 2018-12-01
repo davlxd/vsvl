@@ -145,6 +145,7 @@ class VideoSurvl extends Component {
   delayOpenCVProcessing(delayInMS = 3000) {
     delayInMS = delayInMS + 1000
     if (typeof window.cv !== 'undefined') {
+      this.setState({ putOnSlowLoadingSnack: false })
       return this.openCVProcessing()
     }
     this.setState({ putOnSlowLoadingSnack: true })

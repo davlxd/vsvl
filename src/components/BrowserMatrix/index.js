@@ -55,7 +55,7 @@ class BrowserMatrix extends Component {
         <Paper className={classes.paper}>
           <section>
             <Typography variant="subtitle1">
-              This Web application is compatible with most modern browsers (not including IE <img width='15px' src='/browser-logo-ie.png' alt='IE'/> of course).
+              This Web application is compatible with most modern browsers (not with IE <img width='15px' src='/browser-logo-ie.png' alt='IE'/> and safari <img width='15px' src='/browser-logo-safari.png' alt='safari'/> ).
              </Typography>
             <Typography variant="subtitle1">
               However in order to save video clips to your device,

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 5 //message = 'Github pages SPA'
+const version = 6 //message = 'Multiple rewording'
 
 class VersionControl extends Component {
   componentDidMount() {

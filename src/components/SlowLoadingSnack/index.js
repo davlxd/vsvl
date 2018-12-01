@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import GenericSnack from '../GenericSnack'
 
 const SlowLoadingSnack = props => (
-  <GenericSnack duration={4000} message={<span id="message-id">Web app is loading, please be patient.</span>} {...props} />
+  <GenericSnack duration={10000} message={<span id="message-id">Web app is loading, please wait.</span>} {...props} />
 )
 
 SlowLoadingSnack.propTypes = {
