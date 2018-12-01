@@ -214,10 +214,6 @@ class VideoSurvl extends Component {
       }, 1000)
   }
 
-  savingToFileOnGoing () {
-    return this.savingToFileMediaRecorder != null && this.savingToFileMediaRecorder.state != 'inactive'
-  }
-
   pauseSavingToFile () {
     if (this.savingToFileStatus !== 'started') {
       return 
@@ -352,9 +348,7 @@ class VideoSurvl extends Component {
     const userCheckSavingToFilesOnlyMotionDetected = !prevProps.savingToFilesOnlyMotionDetected && savingToFilesOnlyMotionDetected
     const userUncheckSavingToFilesOnlyMotionDetected = prevProps.savingToFilesOnlyMotionDetected && !savingToFilesOnlyMotionDetected
 
-    // TODO get rid of extra condition check here
-    // TODO hide checkbox if 1st radio button check
-    if (userSwitchOnSavingToFiles) { // kick off a saving when user switch on
+    if (userSwitchOnSavingToFiles) {
       this.kickOffSavingToFile()
     }
 
@@ -362,11 +356,15 @@ class VideoSurvl extends Component {
       this.closeCurrentFile(false)
     }
 
-    if (savingToFilesOnlyMotionDetected && savingToFilesStrategy !== 'motion-detected' && motionGone) {
-      this.pauseSavingToFile()
+    if (savingToFilesOnlyMotionDetected && motionGone) {
+      if (savingToFilesStrategy === 'motion-detected') {
+        this.closeCurrentFile(false)
+      } else {
+        this.pauseSavingToFile()
+      }
     }
 
-    if (savingToFilesOnlyMotionDetected && savingToFilesStrategy !== 'motion-detected' && motionDetected) {
+    if (motionDetected) {
       this.resumeOrKickoffSavingToFile()
     }
 
@@ -374,32 +372,8 @@ class VideoSurvl extends Component {
       this.resumeOrKickoffSavingToFile()
     }
 
-    if (userCheckSavingToFilesOnlyMotionDetected && savingToFilesStrategy !== 'motion-detected' && !motioning) {
+    if (savingToFilesStrategy !== 'motion-detected' && !motioning && userCheckSavingToFilesOnlyMotionDetected) {
       this.pauseSavingToFile()
-    }
-
-
-
-
-    //                              ^
-    //                              |
-    //                   down override up, fix this
-    //                              |
-    //                              v
-    if (this.savingToFileOnGoing() && savingToFilesStrategy === 'motion-detected' && motionGone) {
-      this.closeCurrentFile(false)
-    }
-
-    if (!this.savingToFileOnGoing() && savingToFiles && savingToFilesStrategy === 'motion-detected' && motionDetected) {
-      this.kickOffSavingToFile()
-    }
-
-    if (!this.savingToFileOnGoing() && savingToFiles && savingToFilesOnlyMotionDetected && motionDetected) {
-      this.kickOffSavingToFile()
-    }
-
-    if (!this.savingToFileOnGoing() && savingToFiles && prevProps.savingToFilesOnlyMotionDetected && !savingToFilesOnlyMotionDetected) {
-      this.kickOffSavingToFile()
     }
   }
 
