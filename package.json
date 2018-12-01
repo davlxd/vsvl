@@ -1,6 +1,8 @@
 {
   "name": "vsvl",
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "homepage" : "https://videosurveillance.webcam",
+  "description" : "Video Surveillance with Webcam",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.5.1",

@@ -17,9 +17,12 @@ import { USER_CLICK_CONSENT, } from '../../actions'
 
 
 const styles = theme => ({
-  dialogParagraph: {
-    marginTop: theme.spacing.unit * 0.3,
-    marginBottom: theme.spacing.unit * 0.3,
+  dialogParagraph2: {
+    marginTop: theme.spacing.unit * 1,
+  },
+  dialogParagraph22: {
+    marginTop: theme.spacing.unit * 1,
+    marginBottom: theme.spacing.unit * 1,
   },
   a: {
     color: 'inherit'
@@ -63,11 +66,11 @@ class ConsentDialog extends Component {
         >
           <DialogTitle id="videoSurveillance-webcam">{"Video Surveillance with Webcam"}</DialogTitle>
           <DialogContent>
-            <DialogContentText variant='body1' className={classes.dialogParagraph}>
+            <DialogContentText variant='body1' className={classes.dialogParagraph1}>
               This Web application captures video from Webcam, presents on web page,
               and/or saves to files on your device, with various Video Content Analysis functionalities (e.g. motion detection) available.
             </DialogContentText>
-            <DialogContentText variant='body1' className={classes.dialogParagraph}>
+            <DialogContentText variant='body1' className={classes.dialogParagraph2}>
               Video surveillance activities may or may not legal,
               depending on various scenarios and the country/region you live.
               Please seek legal advice and make sure your activities comply with all applicable laws and regulations.
@@ -86,11 +89,11 @@ class ConsentDialog extends Component {
             />
             <Divider />
             <br />
-            <DialogContentText variant='body1' className={classes.dialogParagraph}>
+            <DialogContentText variant='body1' className={classes.dialogParagraph1}>
               This Web application is designed to run locally and will not upload captured videos/audios to the Internet.
               However this Web application uses Google Analytics (to measure traffic and usage), which transfers data over Internet.
             </DialogContentText>
-            <DialogContentText variant='body1' className={classes.dialogParagraph}>
+            <DialogContentText variant='body1' className={classes.dialogParagraph22}>
               This Web application also store cookies on your device.
               Please read our <a href='/terms-of-service' target='_blank' rel="noopener noreferrer" className={classes.a}>Terms of Service</a>,
               <a href='/privacy-policy' target='_blank' rel="noopener noreferrer" className={classes.a}>Privacy Policy</a> and <a href='/cookie-policy' target='_blank' className={classes.a}>Cookies Policy</a> for detailed explanation.
@@ -104,7 +107,8 @@ class ConsentDialog extends Component {
                   color="primary"
                 />
               }
-              label="I consent cookies placement, have read and accept Terms of Service, Privacy Policy and Cookies Policy."
+              label={<span>I consent cookies placement, have read and accept <a href='/terms-of-service' target='_blank' rel="noopener noreferrer" className={classes.a}>Terms of Service</a>
+              , <a href='/privacy-policy' target='_blank' rel="noopener noreferrer" className={classes.a}>Privacy Policy</a> and <a href='/cookie-policy' target='_blank' className={classes.a}>Cookies Policy</a>.</span>}
             />
           </DialogContent>
           <DialogActions>

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 1
+const version = 2 //message = 'Fine-tune ConsentDialog'
 
 class VersionControl extends Component {
   componentDidMount() {
