@@ -185,9 +185,7 @@ class VideoSurvl extends Component {
         // schedule the next one.
         let delay = 1000/FPS - (Date.now() - begin)
 
-        if (!this.props.abort) {
-          setTimeout(processVideo, delay)
-        }
+        setTimeout(processVideo, delay)
 
       } catch (err) {
         console.error(err)
