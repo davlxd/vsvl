@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
-import App from './containers/App'
 import * as serviceWorker from './serviceWorker'
 
 import { Provider } from 'react-redux'
@@ -12,7 +11,6 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 
 import LegalDoc from './components/LegalDoc'
 import BrowserMatrix from './components/BrowserMatrix'
-import Test from './containers/Test'
 import Home from './containers/Home'
 
 import ieDetector from './ieDetector'
@@ -35,8 +33,6 @@ ReactDOM.render(
     <Router>
       <div>
         <Route exact path="/" render={() => (ieDetector() ? (<Redirect to="/browser-matrix"/>) : (<Home/>) )}/>
-        <Route path="/app" component={App} />
-        <Route path="/test" component={Test} />
         <Route path="/terms-of-service" component={LegalDoc}/>
         <Route path="/privacy-policy" component={LegalDoc}/>
         <Route path="/cookie-policy" component={LegalDoc}/>
