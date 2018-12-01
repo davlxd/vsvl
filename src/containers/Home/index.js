@@ -6,6 +6,7 @@ import VideoSurvl from '../VideoSurvl'
 import SettingsSlider from '../SettingsSlider'
 import MotionIndicator from '../MotionIndicator'
 import MotionAlert from '../MotionAlert'
+import VerionControl from '../VerionControl'
 
 import { APPLY_WEB_STORAGE_VALUE, } from '../../actions'
 
@@ -32,6 +33,7 @@ class Home extends Component {
         <MotionIndicator />
         <SettingsSlider />
         <MotionAlert />
+        <VerionControl />
       </div>
     )
   }

@@ -105,7 +105,9 @@ class SettingsSlider extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    localStorage.setItem('settings', JSON.stringify(this.props.settings))
+    if (this.props.consent) {
+      localStorage.setItem('settings', JSON.stringify(this.props.settings))
+    }
   }
 
   handleSettingButtonClick = () => {
@@ -231,6 +233,7 @@ SettingsSlider.propTypes = {
 
 
 const mapStateToProps = (state) => ({
+  consent: state.misc.consent,
   ...state.settings,
   settings: state.settings
 })

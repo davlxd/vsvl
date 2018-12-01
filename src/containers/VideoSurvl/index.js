@@ -6,6 +6,8 @@ import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE, SAVING_FI
 import NeedCameraSnack from '../../components/NeedCameraSnack'
 import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 
+import UseVlcSnack from '../UseVlcSnack'
+
 import onAndDelayOff from './on-and-delay-off'
 const moment = require('moment')
 
@@ -73,6 +75,7 @@ class VideoSurvl extends Component {
     this.state = {
       putOnNeedCameraSnack: false,
       putOnSlowLoadingSnack: false,
+      puOnUseVlcSnack: false,
       abort: false, //TEMP
     }
   }
@@ -207,6 +210,9 @@ class VideoSurvl extends Component {
           this.savingToFileMediaRecorder = null
           this.props.savingComplete()
           this.savingToFileStatus = 'closed'
+          this.setState({
+            puOnUseVlcSnack: true
+          })
           if (recreate){
             this.kickOffSavingToFile()
           }
@@ -398,7 +404,7 @@ class VideoSurvl extends Component {
 
   render() {
     const { classes, playbackDisplayMode, frameRatio, width, height } = this.props
-    const { putOnNeedCameraSnack, putOnSlowLoadingSnack } = this.state
+    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, puOnUseVlcSnack } = this.state
 
     let streamingStyleClass = classes.bgvFullScreen
     if (playbackDisplayMode === 'original') {
@@ -415,6 +421,7 @@ class VideoSurvl extends Component {
         {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
         <NeedCameraSnack on={putOnNeedCameraSnack} off={() => { this.setState({putOnNeedCameraSnack: false}) }}/>
         <SlowLoadingSnack on={putOnSlowLoadingSnack} off={() => { this.setState({putOnSlowLoadingSnack: false}); this.slowLoadingSnackTimeoutHandle = null; }}/>
+        <UseVlcSnack on={puOnUseVlcSnack} off={() => {}} />
       </div>
     )
   }
