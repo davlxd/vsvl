@@ -15,7 +15,7 @@ import BrowserMatrix from './components/BrowserMatrix'
 import Test from './containers/Test'
 import Home from './containers/Home'
 
-import browser from 'browser-detect'
+import ieDetector from './ieDetector'
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
 
@@ -34,7 +34,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div>
-        <Route exact path="/" render={() => (browser().name === 'ie' ? (<Redirect to="/browser-matrix"/>) : (<Home/>) )}/>
+        <Route exact path="/" render={() => (ieDetector() ? (<Redirect to="/browser-matrix"/>) : (<Home/>) )}/>
         <Route path="/app" component={App} />
         <Route path="/test" component={Test} />
         <Route path="/terms-of-service" component={LegalDoc}/>
