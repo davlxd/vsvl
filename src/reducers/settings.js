@@ -30,6 +30,18 @@ export default (state = initialState, action) => {
         ...action.value
       }
     case 'ALTER_SETTING':
+      if (action.name === 'savingToFilesStrategy' && action.value === 'motion-detected') {
+        return {
+          ...state,
+          savingToFilesOnlyMotionDetected: true,
+          [action.name]: action.value,
+        }
+      } else if (action.name === 'savingToFilesOnlyMotionDetected' && state.savingToFilesStrategy === 'motion-detected') {
+        return {
+          ...state,
+          savingToFilesOnlyMotionDetected: true,
+        }
+      }
       return {
         ...state,
         [action.name]: action.value
