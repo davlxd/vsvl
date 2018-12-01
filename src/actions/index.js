@@ -43,6 +43,15 @@ export const SAVING_COMPLETE = {
 }
 
 
+export const SETTINGS_SLIDER_ON = {
+  type: 'SETTINGS_SLIDER_ON'
+}
+
+export const SETTINGS_SLIDER_OFF = {
+  type: 'SETTINGS_SLIDER_OFF'
+}
+
+
 
 export const ALTER_SETTING = (name, value) => ({
   type: 'ALTER_SETTING',

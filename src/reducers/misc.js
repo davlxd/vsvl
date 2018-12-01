@@ -1,5 +1,6 @@
 const initialState = {
   consent: null,
+  settingsSliderIsOn: false
 }
 
 
@@ -14,6 +15,16 @@ export default (state = initialState, action) => {
       return {
         ...state,
         consent: true,
+      }
+    case 'SETTINGS_SLIDER_ON':
+      return {
+        ...state,
+        settingsSliderIsOn: true,
+      }
+    case 'SETTINGS_SLIDER_OFF':
+      return {
+        ...state,
+        settingsSliderIsOn: false,
       }
     default:
       return state

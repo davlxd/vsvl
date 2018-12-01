@@ -22,7 +22,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 
 import BrowserCannotSavingFilesSnack from '../../components/BrowserCannotSavingFilesSnack'
 
-import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, } from '../../actions'
+import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, SETTINGS_SLIDER_ON, SETTINGS_SLIDER_OFF } from '../../actions'
 
 const { supported, } = window.streamSaver
 
@@ -111,7 +111,12 @@ class SettingsSlider extends Component {
   }
 
   handleSettingButtonClick = () => {
-    this.setState(state => ({ checked: !state.checked }));
+    if (this.state.checked) {
+      this.props.settingsSliderOff()
+    } else {
+      this.props.settingsSliderOn()
+    }
+    this.setState(state => ({ checked: !this.state.checked }));
   }
 
   handleToggle = name => event => {
@@ -244,6 +249,12 @@ const mapDispatchToProps = (dispatch) => ({
   },
   recoverSettingsFromWebStorage: value => {
     dispatch(RECOVER_SETTINGS_FROM_WEB_STORAGE(value))
+  },
+  settingsSliderOn: () => {
+    dispatch(SETTINGS_SLIDER_ON)
+  },
+  settingsSliderOff: () => {
+    dispatch(SETTINGS_SLIDER_OFF)
   }
 })
 
