@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 
-import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE } from '../../actions'
+import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE, SAVING_FILES, SAVING_COMPLETE } from '../../actions'
 import NeedCameraSnack from '../../components/NeedCameraSnack'
 import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 
@@ -65,6 +65,7 @@ class VideoSurvl extends Component {
     this.fgbg = null
     this.slowLoadingSnackTimeoutHandle = null
 
+    this.savingToFileStatus = 'closed'
     this.savingToFileMediaRecorder = null
     this.savingToFileChunks = null
     this.savingToFileFileStreamWriter = null
@@ -194,15 +195,18 @@ class VideoSurvl extends Component {
 
   closeCurrentFile(recreate=true) {
     console.log('!!!!!   Closing up')
-    if (!this.savingToFileOnGoing()) {
+    if (this.savingToFileStatus !== 'started') {
       return
     }
+    this.savingToFileStatus = 'closing'
     this.savingToFileMediaRecorder.stop()
     setTimeout(
       () => {
         this.savingToFileChunks.then(evt => {
           this.savingToFileFileStreamWriter.close()
           this.savingToFileMediaRecorder = null
+          this.props.savingComplete()
+          this.savingToFileStatus = 'closed'
           if (recreate){
             this.kickOffSavingToFile()
           }
@@ -211,21 +215,23 @@ class VideoSurvl extends Component {
   }
 
   savingToFileOnGoing () {
-    return this.savingToFileMediaRecorder != null
+    return this.savingToFileMediaRecorder != null && this.savingToFileMediaRecorder.state != 'inactive'
   }
 
   pauseSavingToFile () {
-    if (!this.savingToFileOnGoing()) {
+    if (this.savingToFileStatus !== 'started') {
       return 
     }
     this.savingToFileMediaRecorder.pause()
   }
 
   resumeOrKickoffSavingToFile () {
-    if (!this.savingToFileOnGoing()) {
-      this.kickOffSavingToFile()
-    } else {
+    if (this.savingToFileStatus === 'starting' || this.savingToFileStatus === 'started') {
       this.savingToFileMediaRecorder.resume()
+    } else if (this.savingToFileStatus === 'closing'){
+      setTimeout(() => this.kickOffSavingToFile(), 1000)
+    } else if (this.savingToFileStatus === 'closed'){
+      this.kickOffSavingToFile()
     }
   }
 
@@ -234,13 +240,14 @@ class VideoSurvl extends Component {
     if (!savingToFiles) {
       return
     }
-    if (this.savingToFileOnGoing()) {
+    if (this.savingToFileStatus === 'starting' || this.savingToFileStatus === 'started') {
       return
     }
     if (savingToFilesOnlyMotionDetected && !motioning) {
       return
     }
 
+    this.savingToFileStatus = 'starting'
     console.log('!!!!!Kicking off a savingToFile')
 
     const mediaStream = this.canvasRef.current.captureStream(frameRate)
@@ -252,6 +259,7 @@ class VideoSurvl extends Component {
     this.savingToFileFileStreamWriter = fileStream.getWriter()
 
     this.savingToFileMediaRecorder.start()
+    this.props.savingFiles()
 
     // setTimeout(() => {
     //   this.savingToFileMediaRecorder.pause()
@@ -263,6 +271,7 @@ class VideoSurvl extends Component {
 
 
     this.savingToFileMediaRecorder.onstart = () => {
+      this.savingToFileStatus = 'started'
       console.log('---------------------onstart')
     }
     this.savingToFileMediaRecorder.onstop = () => {
@@ -291,7 +300,7 @@ class VideoSurvl extends Component {
   splitFileBasedOnTime() {
     const s = Math.round(Date.now() / 1000)
 
-    if (this.savingToFileOnGoing() && this.props.savingToFilesStrategy === 'time') {
+    if (this.savingToFileStatus === 'started' && this.props.savingToFilesStrategy === 'time') {
       let m = 60
       switch (this.props.splitFileTime) {
         case 'on-the-1-min': m = 60 * 1; break;
@@ -302,6 +311,8 @@ class VideoSurvl extends Component {
         case 'on-the-hour': m = 60 * 60; break;
         default: m = 60
       }
+
+      console.log(s, m, s % m)
 
       if (s % m === 0) {
         this.closeCurrentFile(true)
@@ -319,6 +330,8 @@ class VideoSurvl extends Component {
         putOnSlowLoadingSnack: true
       })
     }, 4000)
+
+    window.onresize = () => this.forceUpdate()
   }
 
 
@@ -418,7 +431,8 @@ class VideoSurvl extends Component {
       streamingStyleClass = classes.bgvOriginal
     }
     if (playbackDisplayMode === 'extend') {
-      streamingStyleClass = frameRatio > 1 ? classes.bgvExtendVertical : classes.bgvExtendHorizontal
+      const screenRatio = window.innerWidth / window.innerHeight
+      streamingStyleClass = screenRatio > frameRatio ? classes.bgvExtendVertical : classes.bgvExtendHorizontal
     }
     return (
       <div>
@@ -446,6 +460,12 @@ const mapDispatchToProps = (dispatch) => ({
   },
   motionGone: () => {
     dispatch(MOTION_GONE)
+  },
+  savingFiles: () => {
+    dispatch(SAVING_FILES)
+  },
+  savingComplete: () => {
+    dispatch(SAVING_COMPLETE)
   }
 })
 

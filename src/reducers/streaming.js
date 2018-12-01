@@ -1,5 +1,6 @@
 const initialState = {
-  motioning: false
+  motioning: false,
+  saving: false
 }
 
 
@@ -14,6 +15,16 @@ export default (state = initialState, action) => {
       return {
         ...state,
         motioning: false
+      }
+    case 'SAVING_FILES':
+      return {
+        ...state,
+        saving: true
+      }
+    case 'SAVING_COMPLETE':
+      return {
+        ...state,
+        saving: false
       }
     default:
       return state

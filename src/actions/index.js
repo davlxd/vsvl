@@ -34,6 +34,14 @@ export const MOTION_GONE = {
   type: 'MOTION_GONE'
 }
 
+export const SAVING_FILES = {
+  type: 'SAVING_FILES'
+}
+
+export const SAVING_COMPLETE = {
+  type: 'SAVING_COMPLETE'
+}
+
 
 
 export const ALTER_SETTING = (name, value) => ({

@@ -6,15 +6,24 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { withStyles } from '@material-ui/core/styles'
 
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun'
+import SavingIcon from '@material-ui/icons/SaveAlt'
 
 
 const styles = theme => ({
-  motionIcon: {
+  root: {
     position: 'fixed',
+    right: theme.spacing.unit * 1,
     bottom: theme.spacing.unit * 10,
-    right: theme.spacing.unit * 2,
     zIndex: 2,
     animation: 'flash linear 2s infinite',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  motionIcon: {
+    marginTop: theme.spacing.unit * 1,
+  },
+  savingIcon: {
+    marginTop: theme.spacing.unit * 1,
   },
   '@keyframes flash': {
     '0%': { opacity: 1, },
@@ -32,12 +41,19 @@ class MotionIndicator extends Component {
 
 
   render() {
-    const { classes, motioning } = this.props
+    const { classes, motioning, saving } = this.props
 
     return (
-      <Tooltip title="Motion detected">
-        <DirectionsRunIcon className={classes.motionIcon} style={{display: motioning ? null : 'none'}} color="action" fontSize="large"/>
-      </Tooltip>
+      <div className={classes.root}>
+        <Tooltip title="Motion detected">
+          <DirectionsRunIcon className={classes.motionIcon} style={{visibility: motioning ? 'visible' : 'hidden'}} color="action" fontSize="large"/>
+        </Tooltip>
+
+        <Tooltip title="Saving to files">
+          <SavingIcon className={classes.savingIcon} style={{visibility: saving ? 'visible' : 'hidden'}} color="action" fontSize="large"/>
+        </Tooltip>
+      </div>
+
     )
   }
 }
@@ -48,7 +64,7 @@ MotionIndicator.propTypes = {
 
 
 const mapStateToProps = (state) => ({
-  motioning: state.streaming.motioning
+  ...state.streaming
 })
 
 const mapDispatchToProps = (dispatch) => ({
