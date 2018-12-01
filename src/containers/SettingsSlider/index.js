@@ -164,10 +164,10 @@ class SettingsSlider extends Component {
                 </RadioGroup>
               </FormControl>
               <FormControlLabel control={ <Switch checked={alertingOnMotion} onChange={this.handleToggle('alertingOnMotion')} color="primary" /> } label="Alert when motion detected" />
-              <FormControl component="fieldset" className={classes.formControl} disabled={!alertingOnMotion}>
-                <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={alertingOnMotion? alertingOnMotionStrategy : null} onChange={this.handleChange('alertingOnMotionStrategy')}>
-                  <FormControlLabel value="alert-once" className={classes.radioLabel} control={<Radio color="primary"/>} label="Alert once" />
-                  <FormControlLabel value="keep-alerting" className={classes.radioLabel} control={<Radio color="primary"/>} label="Keep alerting" />
+              <FormControl component="fieldset" className={classes.formControl}>
+                <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={alertingOnMotionStrategy} onChange={this.handleChange('alertingOnMotionStrategy')}>
+                  <FormControlLabel value="alert-once" className={classes.radioLabel} control={<Radio color={alertingOnMotion ? 'primary' : 'default'}/>} label="Alert once" />
+                  <FormControlLabel value="keep-alerting" className={classes.radioLabel} control={<Radio color={alertingOnMotion ? 'primary' : 'default'}/>} label="Keep alerting" />
                 </RadioGroup>
               </FormControl>
             </Paper>
@@ -176,18 +176,18 @@ class SettingsSlider extends Component {
               <Typography variant="h5" gutterBottom>Saving to Files</Typography>
               <Divider className={classes.dividerBelowTitle}/>
               <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggleSavingToFiles} color="primary" /> } label="Saving to files" />
-              <FormControlLabel disabled={!savingToFiles} control={ <Checkbox checked={savingToFiles ? savingToFilesOnlyMotionDetected : false} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color="primary" /> } label="Saving only when motion detected" />
-              <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} disabled={!savingToFiles} value={savingToFiles? savingToFilesPrefix: ''} fullWidth onChange={this.handleChange('savingToFilesPrefix')} margin="normal" />
-              <FormControl component="fieldset" className={classes.formControl} disabled={!savingToFiles}>
+              <FormControlLabel control={ <Checkbox checked={savingToFilesOnlyMotionDetected} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color={savingToFiles ? 'primary' : 'default'} /> } label="Saving only when motion detected" />
+              <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} value={savingToFilesPrefix} fullWidth onChange={this.handleChange('savingToFilesPrefix')} margin="normal" color={savingToFiles ? 'primary' : 'default'}/>
+              <FormControl component="fieldset" className={classes.formControl} color={savingToFiles ? 'primary' : 'default'}>
                 <FormLabel component="legend" className={classes.createANewFileLabel}>Create a new file</FormLabel>
-                <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={savingToFiles? savingToFilesStrategy: null} onChange={this.handleChange('savingToFilesStrategy')}>
-                  <FormControlLabel value="motion-detected" className={classes.radioLabel} control={<Radio color="primary"/>} label="when motion detected" />
-                  {/*<FormControlLabel value="file-size"className={classes.radioLabel}  control={<Radio color="primary"/>} label="the file size exceeds" /> */}
-                  <FormControlLabel value="time" className={classes.radioLabel}  control={<Radio color="primary"/>} label="on specific time" />
+                <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={savingToFilesStrategy} onChange={this.handleChange('savingToFilesStrategy')}>
+                  <FormControlLabel value="motion-detected" className={classes.radioLabel} control={<Radio color={savingToFiles ? 'primary' : 'default'}/>} label="when motion detected" />
+                  {/*<FormControlLabel value="file-size"className={classes.radioLabel}  control={<Radio color={savingToFiles ? 'primary' : 'default'}/>} label="the file size exceeds" /> */}
+                  <FormControlLabel value="time" className={classes.radioLabel}  control={<Radio color={savingToFiles ? 'primary' : 'default'}/>} label="on specific time" />
                 </RadioGroup>
               </FormControl>
-              <TextField id="file-split-size" label="Size in MB" className={classes.fileSplitSizeTextField} style={{display: savingToFiles && savingToFilesStrategy === 'file-size' ? null : 'none'}} value={splitFileSize} onChange={this.handleChange('splitFileSize')} margin="none" />
-              <FormControl className={classes.formControl} style={{display: savingToFiles && savingToFilesStrategy === 'time' ? null : 'none'}}>
+              <TextField id="file-split-size" label="Size in MB" className={classes.fileSplitSizeTextField} style={{display: savingToFilesStrategy === 'file-size' ? null : 'none'}} value={splitFileSize} onChange={this.handleChange('splitFileSize')} margin="none" color={savingToFiles ? 'primary' : 'default'}/>
+              <FormControl className={classes.formControl} style={{display: savingToFilesStrategy === 'time' ? null : 'none'}}>
                 <Select value={splitFileTime} onChange={this.handleChange('splitFileTime')} inputProps={{ name: 'split-file-name', id: 'split-file-name', }}>
                   <MenuItem value='on-the-1-min'>on the minute</MenuItem>
                   <MenuItem value='on-the-2-min'>on the 2 min</MenuItem>

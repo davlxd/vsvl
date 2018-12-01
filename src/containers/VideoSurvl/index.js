@@ -65,7 +65,6 @@ class VideoSurvl extends Component {
     this.fgbg = null
     this.slowLoadingSnackTimeoutHandle = null
 
-    this.savingToFileOnGoing = false
     this.savingToFileMediaRecorder = null
     this.savingToFileChunks = null
     this.savingToFileFileStreamWriter = null
@@ -95,7 +94,7 @@ class VideoSurvl extends Component {
 
       this.cancelScheduledSlowLoadingSnack()
       this.delayOpenCVProcessing()
-      this.savingCanvasToFile()
+      this.kickOffSavingToFile()
 
     }).catch(err => {
       this.cancelScheduledSlowLoadingSnack()
@@ -195,7 +194,7 @@ class VideoSurvl extends Component {
 
   closeCurrentFile(recreate=true) {
     console.log('!!!!!   Closing up')
-    if (this.savingToFileMediaRecorder == null && !this.savingToFileOnGoing) {
+    if (!this.savingToFileOnGoing()) {
       return
     }
     this.savingToFileMediaRecorder.stop()
@@ -203,29 +202,46 @@ class VideoSurvl extends Component {
       () => {
         this.savingToFileChunks.then(evt => {
           this.savingToFileFileStreamWriter.close()
-          this.savingToFileOnGoing = false
           this.savingToFileMediaRecorder = null
           if (recreate){
-            this.savingCanvasToFile()
+            this.kickOffSavingToFile()
           }
         })
       }, 1000)
   }
 
-  savingCanvasToFile() {
+  savingToFileOnGoing () {
+    return this.savingToFileMediaRecorder != null
+  }
+
+  pauseSavingToFile () {
+    if (!this.savingToFileOnGoing()) {
+      return 
+    }
+    this.savingToFileMediaRecorder.pause()
+  }
+
+  resumeOrKickoffSavingToFile () {
+    if (!this.savingToFileOnGoing()) {
+      this.kickOffSavingToFile()
+    } else {
+      this.savingToFileMediaRecorder.resume()
+    }
+  }
+
+  kickOffSavingToFile() {
     const { savingToFiles, frameRate, savingToFilesPrefix, savingToFilesOnlyMotionDetected, motioning } = this.props
     if (!savingToFiles) {
       return
     }
-    if (this.savingToFileOnGoing) {
+    if (this.savingToFileOnGoing()) {
       return
     }
     if (savingToFilesOnlyMotionDetected && !motioning) {
       return
     }
 
-    this.savingToFileOnGoing = true
-    console.log('!!!!!Kicking off a savingCanvasToFile')
+    console.log('!!!!!Kicking off a savingToFile')
 
     const mediaStream = this.canvasRef.current.captureStream(frameRate)
     this.savingToFileMediaRecorder = new MediaRecorder(mediaStream)
@@ -271,21 +287,11 @@ class VideoSurvl extends Component {
 
   }
 
-  componentDidMount() {
-    this.initiateCamera()
-    this.currentTimeIntervalHandle = setInterval(() => this.splitFileBasedOnTime(), 1000)
-
-    this.slowLoadingSnackTimeoutHandle = setTimeout(() => {
-      this.setState({
-        putOnSlowLoadingSnack: true
-      })
-    }, 4000)
-  }
 
   splitFileBasedOnTime() {
     const s = Math.round(Date.now() / 1000)
 
-    if (this.savingToFileOnGoing && this.props.savingToFilesStrategy === 'time') {
+    if (this.savingToFileOnGoing() && this.props.savingToFilesStrategy === 'time') {
       let m = 60
       switch (this.props.splitFileTime) {
         case 'on-the-1-min': m = 60 * 1; break;
@@ -303,6 +309,19 @@ class VideoSurvl extends Component {
     }
   }
 
+
+  componentDidMount() {
+    this.initiateCamera()
+    this.currentTimeIntervalHandle = setInterval(() => this.splitFileBasedOnTime(), 1000)
+
+    this.slowLoadingSnackTimeoutHandle = setTimeout(() => {
+      this.setState({
+        putOnSlowLoadingSnack: true
+      })
+    }, 4000)
+  }
+
+
   componentDidUpdate(prevProps) {
     const {
       savingToFiles,
@@ -311,39 +330,63 @@ class VideoSurvl extends Component {
       motioning,
     } = this.props
 
+    const userSwitchOnSavingToFiles = !prevProps.savingToFiles && savingToFiles
+    const userSwitchOffSavingToFiles = prevProps.savingToFiles && !savingToFiles
+
     const motionDetected = !prevProps.motioning && motioning
     const motionGone = prevProps.motioning && !motioning
 
-    if (!prevProps.savingToFiles && savingToFiles) { // kick off a saving when user switch on
-      this.savingCanvasToFile()
+    const userCheckSavingToFilesOnlyMotionDetected = !prevProps.savingToFilesOnlyMotionDetected && savingToFilesOnlyMotionDetected
+    const userUncheckSavingToFilesOnlyMotionDetected = prevProps.savingToFilesOnlyMotionDetected && !savingToFilesOnlyMotionDetected
+
+    // TODO get rid of extra condition check here
+    // TODO hide checkbox if 1st radio button check
+    if (userSwitchOnSavingToFiles) { // kick off a saving when user switch on
+      this.kickOffSavingToFile()
     }
 
-    if (prevProps.savingToFiles && !savingToFiles) {
+    if (userSwitchOffSavingToFiles) {
       this.closeCurrentFile(false)
     }
 
-    if (this.savingToFileOnGoing && this.savingToFileMediaRecorder != null && savingToFilesOnlyMotionDetected && motionGone) {
-      this.savingToFileMediaRecorder.pause()
+    if (savingToFilesOnlyMotionDetected && savingToFilesStrategy !== 'motion-detected' && motionGone) {
+      this.pauseSavingToFile()
     }
 
-    if (this.savingToFileOnGoing && this.savingToFileMediaRecorder != null && savingToFilesOnlyMotionDetected && motionDetected) {
-      this.savingToFileMediaRecorder.resume()
+    if (savingToFilesOnlyMotionDetected && savingToFilesStrategy !== 'motion-detected' && motionDetected) {
+      this.resumeOrKickoffSavingToFile()
     }
 
-    if (this.savingToFileOnGoing && savingToFilesStrategy === 'motion-detected' && motionGone) {
+    if (userUncheckSavingToFilesOnlyMotionDetected) {
+      this.resumeOrKickoffSavingToFile()
+    }
+
+    if (userCheckSavingToFilesOnlyMotionDetected && savingToFilesStrategy !== 'motion-detected' && !motioning) {
+      this.pauseSavingToFile()
+    }
+
+
+
+
+    //                              ^
+    //                              |
+    //                   down override up, fix this
+    //                              |
+    //                              v
+    if (this.savingToFileOnGoing() && savingToFilesStrategy === 'motion-detected' && motionGone) {
       this.closeCurrentFile(false)
     }
 
-    if (!this.savingToFileOnGoing && savingToFiles && savingToFilesStrategy === 'motion-detected' && motionDetected) {
-      this.savingCanvasToFile()
+    if (!this.savingToFileOnGoing() && savingToFiles && savingToFilesStrategy === 'motion-detected' && motionDetected) {
+      this.kickOffSavingToFile()
     }
 
-    if (!this.savingToFileOnGoing && savingToFiles && savingToFilesOnlyMotionDetected && motionDetected) {
-      this.savingCanvasToFile()
+    if (!this.savingToFileOnGoing() && savingToFiles && savingToFilesOnlyMotionDetected && motionDetected) {
+      this.kickOffSavingToFile()
     }
 
-    if (!this.savingToFileOnGoing && savingToFiles && prevProps.savingToFilesOnlyMotionDetected && !savingToFilesOnlyMotionDetected) {
-      this.savingCanvasToFile()
+    if (!this.savingToFileOnGoing() && savingToFiles && prevProps.savingToFilesOnlyMotionDetected && !savingToFilesOnlyMotionDetected) {
+      this.kickOffSavingToFile()
     }
   }
 

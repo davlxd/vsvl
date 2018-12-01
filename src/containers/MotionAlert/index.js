@@ -70,6 +70,14 @@ class MotionAlert extends Component {
     if (prevProps.motioning && !motioning) {
       this.audio.loop = false
     }
+    
+    if (prevProps.alertingOnMotion && !alertingOnMotion) {
+      this.audio.loop = false
+    }
+
+    if (prevProps.alertingOnMotionStrategy === 'keep-alerting' && alertingOnMotionStrategy === 'alert-once') {
+      this.audio.loop = false
+    }
   }
 
 
