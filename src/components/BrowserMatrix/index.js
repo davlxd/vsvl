@@ -24,12 +24,13 @@ const styles = theme => ({
     padding: theme.spacing.unit * 3,
     marginLeft: 'auto',
     marginRight: 'auto',
-    width: '65vw',
+    width: '80vw',
     maxWidth: '650px',
     overflowX: 'auto',
   },
   cell: {
-    textAlign: 'center'
+    textAlign: 'center',
+    paddingRight: theme.spacing.unit * 0.1,
   }
 })
 
@@ -45,6 +46,7 @@ class BrowserMatrix extends Component {
       { browserName: 'opera', playback: true, motionDetect: true, saveToFiles: true, },
       { browserName: 'firefox', playback: true, motionDetect: true, saveToFiles: false, },
       { browserName: 'edge', playback: true, motionDetect: true, saveToFiles: false, },
+      { browserName: 'safari', playback: false, motionDetect: false, saveToFiles: false, },
       { browserName: 'ie', playback: false, motionDetect: false, saveToFiles: false, },
     ]
 
@@ -74,7 +76,7 @@ class BrowserMatrix extends Component {
               <TableBody>
                 {rows.map(row => {
                   return (
-                    <TableRow key={row.id}>
+                    <TableRow key={row.browserName}>
                       <TableCell component="th" scope="row"  className={classes.cell}>
                         <img className={classes.img} width='40px' src={`/browser-logo-${row.browserName}.png`} alt={row.browserName}/>
                       </TableCell>

@@ -91,7 +91,7 @@ class ConsentDialog extends Component {
             <br />
             <DialogContentText variant='body1' className={classes.dialogParagraph1}>
               This Web application is designed to run locally and will not upload captured videos/audios to the Internet.
-              However this Web application uses Google Analytics (to measure traffic and usage), which transfers data over Internet.
+              However it uses Google Analytics (to measure traffic and usage), which transfers data over Internet.
             </DialogContentText>
             <DialogContentText variant='body1' className={classes.dialogParagraph22}>
               This Web application also store cookies on your device.

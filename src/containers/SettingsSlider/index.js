@@ -39,7 +39,8 @@ const styles = theme => ({
     background: 'rgba(255,255,255,0.2)',
     position: 'fixed',
     bottom: 0,
-    left: '50%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     zIndex: 2,
   },
   settingsIcon: {

@@ -14,6 +14,7 @@ import BrowserMatrix from './components/BrowserMatrix'
 import Home from './containers/Home'
 
 import ieDetector from './ieDetector'
+import safariDetector from './safariDetector'
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
 
@@ -32,7 +33,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div>
-        <Route exact path="/" render={() => (ieDetector() ? (<Redirect to="/browser-matrix"/>) : (<Home/>) )}/>
+        <Route exact path="/" render={() => (ieDetector() || safariDetector() ? (<Redirect to="/browser-matrix"/>) : (<Home/>) )}/>
         <Route path="/terms-of-service" component={LegalDoc}/>
         <Route path="/privacy-policy" component={LegalDoc}/>
         <Route path="/cookie-policy" component={LegalDoc}/>
