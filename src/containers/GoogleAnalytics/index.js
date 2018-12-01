@@ -3,17 +3,20 @@ import { connect } from 'react-redux'
 
 import ReactGA from 'react-ga'
 
+
+const trackingId = 'UA-130187164-1'
+
 class GoogleAnalytics extends Component {
   componentDidMount() {
     if (this.props.consent) {
-      ReactGA.initialize('UA-129430709-1')
+      ReactGA.initialize(trackingId)
       ReactGA.pageview(window.location.pathname + window.location.search)
     }
   }
 
   componentDidUpdate(prevProps) {
     if (!prevProps.consent && this.props.consent) {
-      ReactGA.initialize('UA-129430709-1')
+      ReactGA.initialize(trackingId)
       ReactGA.pageview(window.location.pathname + window.location.search)
     }
 
