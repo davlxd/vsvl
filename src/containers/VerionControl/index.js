@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 4 //message = 'Kill safari'
+const version = 5 //message = 'Github pages SPA'
 
 class VersionControl extends Component {
   componentDidMount() {
