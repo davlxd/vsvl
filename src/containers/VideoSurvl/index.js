@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
+import saveAs from 'file-saver'
+
 import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE, SAVING_FILES, SAVING_COMPLETE } from '../../actions'
 import NeedCameraSnack from '../../components/NeedCameraSnack'
 import SlowLoadingSnack from '../../components/SlowLoadingSnack'
@@ -11,6 +13,8 @@ import UseVlcSnack from '../UseVlcSnack'
 
 import onAndDelayOff from './on-and-delay-off'
 const moment = require('moment')
+
+const useStreamSaver = false
 
 const { createWriteStream, } = window.streamSaver
 
@@ -78,6 +82,8 @@ class VideoSurvl extends Component {
     this.savingToFileMediaRecorder = null
     this.savingToFileChunks = null
     this.savingToFileFileStreamWriter = null
+
+    this.fileSaverChunks = []
 
     this.state = {
       putOnNeedCameraSnack: false,
@@ -216,22 +222,39 @@ class VideoSurvl extends Component {
       return
     }
     this.savingToFileStatus = 'closing'
-    this.savingToFileMediaRecorder.stop()
-    setTimeout(
-      () => {
-        this.savingToFileChunks.then(evt => {
-          this.savingToFileFileStreamWriter.close()
-          this.savingToFileMediaRecorder = null
-          this.props.savingComplete()
-          this.savingToFileStatus = 'closed'
-          this.setState({
-            puOnUseVlcSnack: true
+
+    if (useStreamSaver) {
+      this.savingToFileMediaRecorder.stop()
+      setTimeout(
+        () => {
+          this.savingToFileChunks.then(evt => {
+            this.savingToFileFileStreamWriter.close()
+            this.savingToFileMediaRecorder = null
+            this.props.savingComplete()
+            this.savingToFileStatus = 'closed'
+            this.setState({
+              puOnUseVlcSnack: true
+            })
+            if (recreate){
+              this.kickOffSavingToFile()
+            }
           })
-          if (recreate){
-            this.kickOffSavingToFile()
-          }
-        })
-      }, 1000)
+        }, 1000)
+    } else {
+      this.savingToFileMediaRecorder.stop()
+
+      saveAs(new Blob(this.fileSaverChunks, { 'type' : 'video/mp4' }),  `${this.props.savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`)
+      this.fileSaverChunks = []
+      this.savingToFileMediaRecorder = null
+      this.props.savingComplete()
+      this.savingToFileStatus = 'closed'
+      this.setState({
+        puOnUseVlcSnack: true
+      })
+      if (recreate){
+        this.kickOffSavingToFile()
+      }
+    }
   }
 
   pauseSavingToFile () {
@@ -268,11 +291,15 @@ class VideoSurvl extends Component {
 
     const mediaStream = this.canvasRef.current.captureStream(frameRate)
     this.savingToFileMediaRecorder = new MediaRecorder(mediaStream)
-    this.savingToFileChunks = Promise.resolve()
-    const fileReader = new FileReader()
 
-    const fileStream = createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`)
-    this.savingToFileFileStreamWriter = fileStream.getWriter()
+
+    if (useStreamSaver) {
+      this.savingToFileChunks = Promise.resolve()
+      this.savingToFileFileStreamWriter = fileStream.getWriter()
+    }
+    const fileReader = useStreamSaver ? new FileReader() : null
+    const fileStream = useStreamSaver ? createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`) : null
+
 
     this.savingToFileMediaRecorder.start()
     this.props.savingFiles()
@@ -301,13 +328,17 @@ class VideoSurvl extends Component {
     }
     this.savingToFileMediaRecorder.ondataavailable = ({ data }) => {
       console.log('---------------------ondataavailable')
-      this.savingToFileChunks = this.savingToFileChunks.then(() => new Promise(resolve => {
-        fileReader.onload = () => {
-          this.savingToFileFileStreamWriter.write(new Uint8Array(fileReader.result))
-          resolve()
-        }
-        fileReader.readAsArrayBuffer(data)
-      }))
+      if (useStreamSaver) {
+        this.savingToFileChunks = this.savingToFileChunks.then(() => new Promise(resolve => {
+          fileReader.onload = () => {
+            this.savingToFileFileStreamWriter.write(new Uint8Array(fileReader.result))
+            resolve()
+          }
+          fileReader.readAsArrayBuffer(data)
+        }))
+      } else {
+        this.fileSaverChunks.push(data)
+      }
     }
 
   }

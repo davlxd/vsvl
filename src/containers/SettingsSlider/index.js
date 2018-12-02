@@ -125,13 +125,7 @@ class SettingsSlider extends Component {
   }
 
   handleToggleSavingToFiles = event => {
-    if (supported) {
-      return this.handleToggle('savingToFiles')(event)
-    }
-
-    this.setState({
-      putOnBrowserCannotSavingFilesSnack: true
-    })
+    return this.handleToggle('savingToFiles')(event)
   }
 
   handleChange = name => event => {
@@ -213,11 +207,10 @@ class SettingsSlider extends Component {
               <Typography variant="body1"> This Web application is made possible with the following awesome projects: </Typography>
               <ul className={classes.ul}>
                 <li><Typography variant="body1"><a href='https://wordpress.com/' target='_blank' rel="noopener noreferrer" className={classes.a}>Wordpress</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://reactjs.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>React</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://redux.js.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>Redux</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://reactjs.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>React</a>, <a href='https://redux.js.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>Redux</a></Typography></li>
                 <li><Typography variant="body1"><a href='https://material-ui.com' target='_blank' rel="noopener noreferrer" className={classes.a}>Material UI</a></Typography></li>
                 <li><Typography variant="body1"><a href='https://docs.opencv.org/3.4/index.html' target='_blank' rel="noopener noreferrer" className={classes.a}>OpenCV.js</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://github.com/jimmywarting/StreamSaver.js' target='_blank' rel="noopener noreferrer" className={classes.a}>StreamSaver.js</a></Typography></li>
+                <li><Typography variant="body1"><a href='https://github.com/jimmywarting/StreamSaver.js' target='_blank' rel="noopener noreferrer" className={classes.a}>StreamSaver.js</a>, <a href='https://github.com/eligrey/FileSaver.js/' target='_blank' rel="noopener noreferrer" className={classes.a}>FileSaver.js</a></Typography></li>
               </ul>
               <Typography variant="body1" gutterBottom>You can contact us for bugs, feedback, feature requests or something else through following channels: </Typography>
               <ul className={classes.ul} style={{flexGrow: 1}}>
