@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 6 //message = 'Multiple rewording'
+const version = 7 //message = 'Add CircularProgress'
 
 class VersionControl extends Component {
   componentDidMount() {

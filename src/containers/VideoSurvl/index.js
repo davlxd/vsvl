@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE, SAVING_FILES, SAVING_COMPLETE } from '../../actions'
 import NeedCameraSnack from '../../components/NeedCameraSnack'
@@ -48,6 +49,12 @@ const styles = theme => ({
     left: '50%',
     zIndex: '-100',
     transform: 'translateX(-50%) translateY(-50%)',
+  },
+  circularProgress: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translateX(-50%) translateY(-50%)',
   }
 })
 
@@ -75,12 +82,17 @@ class VideoSurvl extends Component {
     this.state = {
       putOnNeedCameraSnack: false,
       putOnSlowLoadingSnack: false,
+      putOnCircularProgress: true,
       puOnUseVlcSnack: false,
       abort: false, //TEMP
     }
   }
 
   initiateCamera() {
+    this.slowLoadingSnackTimeoutHandle = setTimeout(() => {
+      this.setState({ putOnSlowLoadingSnack: true })
+    }, 4000)
+
     navigator.mediaDevices.getUserMedia({
       audio: false,
       // video: { facingMode: 'environment', frameRate: 3}
@@ -95,6 +107,7 @@ class VideoSurvl extends Component {
         height,
         width
       })
+
 
       this.cancelScheduledSlowLoadingSnack()
       this.delayOpenCVProcessing()
@@ -145,10 +158,12 @@ class VideoSurvl extends Component {
   delayOpenCVProcessing(delayInMS = 3000) {
     delayInMS = delayInMS + 1000
     if (typeof window.cv !== 'undefined') {
-      this.setState({ putOnSlowLoadingSnack: false })
+      this.setState({ putOnSlowLoadingSnack: false, putOnCircularProgress: false })
       return this.openCVProcessing()
     }
-    this.setState({ putOnSlowLoadingSnack: true })
+    if (delayInMS === 4000) {
+      this.setState({ putOnSlowLoadingSnack: true })
+    }
     setTimeout(() => {
       this.delayOpenCVProcessing(delayInMS / 2)
     }, delayInMS)
@@ -325,13 +340,6 @@ class VideoSurvl extends Component {
   componentDidMount() {
     this.initiateCamera()
     this.currentTimeIntervalHandle = setInterval(() => this.splitFileBasedOnTime(), 1000)
-
-    this.slowLoadingSnackTimeoutHandle = setTimeout(() => {
-      this.setState({
-        putOnSlowLoadingSnack: true
-      })
-    }, 4000)
-
     window.onresize = () => this.forceUpdate()
   }
 
@@ -403,7 +411,7 @@ class VideoSurvl extends Component {
 
   render() {
     const { classes, playbackDisplayMode, frameRatio, width, height } = this.props
-    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, puOnUseVlcSnack } = this.state
+    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, puOnUseVlcSnack, putOnCircularProgress } = this.state
 
     let streamingStyleClass = classes.bgvFullScreen
     if (playbackDisplayMode === 'original') {
@@ -416,8 +424,11 @@ class VideoSurvl extends Component {
     return (
       <div>
         <video style={{display: 'none'}} width={width} height={height} className={classes.bgvOriginal} ref={this.videoRef} loop autoPlay></video>
-        <canvas id='canvasOutput' ref={this.canvasRef} className={streamingStyleClass} width={width} height={height}></canvas>
         {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
+        <canvas id='canvasOutput' ref={this.canvasRef} className={streamingStyleClass} width={width} height={height}></canvas>
+        <div className={classes.circularProgress} style={{display: putOnCircularProgress ? null : 'none'}}>
+          <CircularProgress />
+        </div>
         <NeedCameraSnack on={putOnNeedCameraSnack} off={() => { this.setState({putOnNeedCameraSnack: false}) }}/>
         <SlowLoadingSnack on={putOnSlowLoadingSnack} off={() => { this.setState({putOnSlowLoadingSnack: false}); this.slowLoadingSnackTimeoutHandle = null; }}/>
         <UseVlcSnack on={puOnUseVlcSnack} off={() => {}} />
