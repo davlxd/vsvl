@@ -38,6 +38,7 @@ ReactDOM.render(
         <Route path="/privacy-policy" component={LegalDoc}/>
         <Route path="/cookie-policy" component={LegalDoc}/>
         <Route path="/browser-matrix" component={BrowserMatrix}/>
+        <Route path="/faq" component={LegalDoc}/>
       </div>
     </Router>
   </Provider>,
