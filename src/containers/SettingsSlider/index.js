@@ -22,6 +22,8 @@ import SettingsIcon from '@material-ui/icons/Settings'
 
 import BrowserCannotSavingFilesSnack from '../../components/BrowserCannotSavingFilesSnack'
 
+import browser from 'browser-detect'
+
 import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, SETTINGS_SLIDER_ON, SETTINGS_SLIDER_OFF } from '../../actions'
 
 const { supported, } = window.streamSaver
@@ -125,7 +127,13 @@ class SettingsSlider extends Component {
   }
 
   handleToggleSavingToFiles = event => {
-    return this.handleToggle('savingToFiles')(event)
+    if (browser().name === 'chrome' || browser().name === 'firefox' || browser().name === 'opera') {
+      return this.handleToggle('savingToFiles')(event)
+    }
+
+    this.setState({
+      putOnBrowserCannotSavingFilesSnack: true
+    })
   }
 
   handleChange = name => event => {

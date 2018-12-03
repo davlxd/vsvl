@@ -79,6 +79,7 @@ class VideoSurvl extends Component {
     this.slowLoadingSnackTimeoutHandle = null
 
     this.savingToFileStatus = 'closed'
+    this.savingToFileName = ''
     this.savingToFileMediaRecorder = null
     this.savingToFileChunks = null
     this.savingToFileFileStreamWriter = null
@@ -222,9 +223,9 @@ class VideoSurvl extends Component {
       return
     }
     this.savingToFileStatus = 'closing'
+    this.savingToFileMediaRecorder.stop()
 
     if (useStreamSaver) {
-      this.savingToFileMediaRecorder.stop()
       setTimeout(
         () => {
           this.savingToFileChunks.then(evt => {
@@ -241,25 +242,28 @@ class VideoSurvl extends Component {
           })
         }, 1000)
     } else {
-      this.savingToFileMediaRecorder.stop()
-
-      saveAs(new Blob(this.fileSaverChunks, { 'type' : 'video/mp4' }),  `${this.props.savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`)
-      this.fileSaverChunks = []
-      this.savingToFileMediaRecorder = null
-      this.props.savingComplete()
-      this.savingToFileStatus = 'closed'
-      this.setState({
-        puOnUseVlcSnack: true
-      })
-      if (recreate){
-        this.kickOffSavingToFile()
-      }
+      setTimeout(
+        () => {
+          const savingToFileNameCopy = this.savingToFileName
+          const fileSaverChunksCopy = this.fileSaverChunks.slice(0)
+          saveAs(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
+          this.fileSaverChunks = []
+          this.savingToFileMediaRecorder = null
+          this.props.savingComplete()
+          this.savingToFileStatus = 'closed'
+          this.setState({
+            puOnUseVlcSnack: true
+          })
+          if (recreate){
+            this.kickOffSavingToFile()
+          }
+        }, 1000)
     }
   }
 
   pauseSavingToFile () {
     if (this.savingToFileStatus !== 'started') {
-      return 
+      return
     }
     this.savingToFileMediaRecorder.pause()
   }
@@ -291,7 +295,7 @@ class VideoSurvl extends Component {
 
     const mediaStream = this.canvasRef.current.captureStream(frameRate)
     this.savingToFileMediaRecorder = new MediaRecorder(mediaStream)
-
+    this.savingToFileName = `${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`
 
     if (useStreamSaver) {
       this.savingToFileChunks = Promise.resolve()

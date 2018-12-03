@@ -44,7 +44,7 @@ class BrowserMatrix extends Component {
     const rows = [
       { browserName: 'chrome', playback: true, motionDetect: true, saveToFiles: true, },
       { browserName: 'opera', playback: true, motionDetect: true, saveToFiles: true, },
-      { browserName: 'firefox', playback: true, motionDetect: true, saveToFiles: false, },
+      { browserName: 'firefox', playback: true, motionDetect: true, saveToFiles: true, },
       { browserName: 'edge', playback: true, motionDetect: true, saveToFiles: false, },
       { browserName: 'safari', playback: false, motionDetect: false, saveToFiles: false, },
       { browserName: 'ie', playback: false, motionDetect: false, saveToFiles: false, },
@@ -55,11 +55,7 @@ class BrowserMatrix extends Component {
         <Paper className={classes.paper}>
           <section>
             <Typography variant="subtitle1">
-              This Web application is compatible with most modern browsers (not with IE <img width='15px' src='/browser-logo-ie.png' alt='IE'/> and Safari <img width='15px' src='/browser-logo-safari.png' alt='safari'/> ).
-             </Typography>
-            <Typography variant="subtitle1">
-              However in order to save video clips to your device,
-              it uses a piece of advanced technology that only supported by Chrome <img width='15px' src='/browser-logo-chrome.png' alt='Chrome'/> and Opera <img width='15px' src='/browser-logo-opera.png' alt='Opera'/> currently.
+              This Web application is compatible with most modern browsers (unfortunately not with Safari <img width='15px' src='/browser-logo-safari.png' alt='safari'/>, and absolutely not with IE <img width='15px' src='/browser-logo-ie.png' alt='IE'/> ).
              </Typography>
           </section>
           <br />

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import GenericSnack from '../GenericSnack'
 
 const BrowserCannotSavingFilesSnack = props => (
-  <GenericSnack duration={10000} message={<span id="message-id">Only Opera and Chrome support this, please check <a href='/browser-matrix' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>Browser Matrix</a> for details.</span>} {...props} />
+  <GenericSnack duration={10000} message={<span id="message-id">This browser doesn't support this, please check <a href='/browser-matrix' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>Browser Matrix</a> for details.</span>} {...props} />
 )
 
 BrowserCannotSavingFilesSnack.propTypes = {
