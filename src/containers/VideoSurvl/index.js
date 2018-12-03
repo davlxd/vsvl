@@ -12,6 +12,7 @@ import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 import UseVlcSnack from '../UseVlcSnack'
 
 import onAndDelayOff from './on-and-delay-off'
+import ffmpegWorker from './ffmpeg-worker'
 const moment = require('moment')
 
 const useStreamSaver = false
@@ -86,6 +87,9 @@ class VideoSurvl extends Component {
 
     this.fileSaverChunks = []
 
+    this.ffmpegLoadingTS = 0
+    this.ffmpegLoadedTS = Infinity
+
     this.state = {
       putOnNeedCameraSnack: false,
       putOnSlowLoadingSnack: false,
@@ -93,6 +97,10 @@ class VideoSurvl extends Component {
       puOnUseVlcSnack: false,
       abort: false, //TEMP
     }
+  }
+
+  ffmpegLoadingTime() {
+    return this.ffmpegLoadedTS - this.ffmpegLoadingTS
   }
 
   initiateCamera() {
@@ -118,6 +126,7 @@ class VideoSurvl extends Component {
 
       this.cancelScheduledSlowLoadingSnack()
       this.delayOpenCVProcessing()
+      ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => { this.ffmpegLoadedTS = ts; console.log('this.ffmpegLoadingTime(): ', this.ffmpegLoadingTime()) })
       this.kickOffSavingToFile()
 
     }).catch(err => {
@@ -246,7 +255,17 @@ class VideoSurvl extends Component {
         () => {
           const savingToFileNameCopy = this.savingToFileName
           const fileSaverChunksCopy = this.fileSaverChunks.slice(0)
-          saveAs(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
+          if (this.ffmpegLoadingTime() < 4000) {
+            const fileReader = new FileReader()
+            fileReader.onload = () => {
+              ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Uint8Array(fileReader.result), savingToFileNameCopy)
+            }
+            fileReader.readAsArrayBuffer(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }))
+            // ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
+          } else {
+            saveAs(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
+            ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => { this.ffmpegLoadedTS = ts; console.log('this.ffmpegLoadingTime(): ', this.ffmpegLoadingTime()) })
+          }
           this.fileSaverChunks = []
           this.savingToFileMediaRecorder = null
           this.props.savingComplete()
