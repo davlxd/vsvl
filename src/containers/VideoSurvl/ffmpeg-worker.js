@@ -1,8 +1,6 @@
 import saveAs from 'file-saver'
 
-export default (loadingTSMarker, loadedTSMarker, array = null, fileName = '') => {
-  let stdout = ''
-  let stderr = ''
+export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '') => {
   loadingTSMarker(Date.now())
   const worker = new Worker("/ffmpeg-worker-mp4.js")
   worker.onmessage = (e) => {
@@ -10,49 +8,38 @@ export default (loadingTSMarker, loadedTSMarker, array = null, fileName = '') =>
     switch (msg.type) {
     case "ready":
       loadedTSMarker(Date.now())
-      if (array == null) {
+      if (blob == null) {
         worker.postMessage({type: "run", arguments: ["-version"]})
         break
       }
-      // const fileReader = new FileReader()
-      // fileReader.onload = () => {
-      //   worker.postMessage({
-      //     type: "run",
-      //     MEMFS: [{name: "in.mp4", data: new Uint8Array(fileReader.result)}],
-      //     arguments: ['-i', 'in.mp4', '-c', 'copy', 'out.mp4']})
-      // }
-      // fileReader.readAsArrayBuffer(blob)
-      //
-      worker.postMessage({
-        type: "run",
-        MEMFS: [{name: "in.mp4", data: array}],
-        arguments: ['-i', 'in.mp4', '-c', 'copy', 'out.mp4']
-      })
+      const fileReader = new FileReader()
+      fileReader.onload = () => {
+        worker.postMessage({
+          type: "run",
+          MEMFS: [{name: "in.mp4", data: new Uint8Array(fileReader.result)}],
+          arguments: ['-i', 'in.mp4', '-c', 'copy', 'out.mp4']})
+      }
+      fileReader.readAsArrayBuffer(blob)
       break
     case "stdout":
-      console.log('stdout!!!!!!!!!!!!!!!!')
-      stdout += msg.data + "\n"
+      console.log('ffmpeg-worker stdout:', msg.data)
       break
     case "stderr":
-      console.log('stderr!!!!!!!!!!!!!!!!')
-      stderr += msg.data + "\n"
+      console.log('ffmpeg-worker stderr:', msg.data)
       break
     case 'done':
-      console.log('done!!!!!!!!!!!!!!!!')
-      console.log(msg.data)
-      console.log(msg.data.MEMFS)
-      console.log(msg.data.MEMFS[0])
-      // saveAs(new Blob(msg.data.MEMFS[0].data, { 'type' : 'video/mp4' }), fileName)
-      saveAs(Buffer(msg.data.MEMFS[0].data), fileName)
+      console.log('ffmpeg-worker done:', msg.data)
+      if (msg.data.MEMFS.length > 0) {
+        saveAs(new Blob([msg.data.MEMFS[0].data]), fileName)
+      }
+      worker.terminate()
       break
     case "exit":
-      console.log("Process exited with code " + msg.data)
-      console.log(stdout)
-      if (stderr) console.error(stderr)
+      console.log("ffmpeg-worker Process exited with code " + msg.data)
       worker.terminate()
       break
     default:
-      console.log('case', msg.type)
+      console.log('ffmpeg-worker onmessage case:', msg.type)
     }
   }
 }

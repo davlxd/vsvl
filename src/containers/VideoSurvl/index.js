@@ -227,7 +227,7 @@ class VideoSurvl extends Component {
   }
 
   closeCurrentFile(recreate=true) {
-    console.log('!!!!!   Closing up')
+    console.log('! Closing up the savingToFile')
     if (this.savingToFileStatus !== 'started') {
       return
     }
@@ -256,13 +256,10 @@ class VideoSurvl extends Component {
           const savingToFileNameCopy = this.savingToFileName
           const fileSaverChunksCopy = this.fileSaverChunks.slice(0)
           if (this.ffmpegLoadingTime() < 4000) {
-            const fileReader = new FileReader()
-            fileReader.onload = () => {
-              ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Uint8Array(fileReader.result), savingToFileNameCopy)
-            }
-            fileReader.readAsArrayBuffer(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }))
-            // ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
+            console.log('ffmpeg-worker is ready, use it')
+            ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy), savingToFileNameCopy)
           } else {
+            console.log('ffmpeg-worker is not ready, dump directly')
             saveAs(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
             ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => { this.ffmpegLoadedTS = ts; console.log('this.ffmpegLoadingTime(): ', this.ffmpegLoadingTime()) })
           }
@@ -310,18 +307,18 @@ class VideoSurvl extends Component {
     }
 
     this.savingToFileStatus = 'starting'
-    console.log('!!!!!Kicking off a savingToFile')
+    console.log('! Kicking off a savingToFile')
 
     const mediaStream = this.canvasRef.current.captureStream(frameRate)
     this.savingToFileMediaRecorder = new MediaRecorder(mediaStream)
     this.savingToFileName = `${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`
 
+    const fileReader = useStreamSaver ? new FileReader() : null
+    const fileStream = useStreamSaver ? createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`) : null
     if (useStreamSaver) {
       this.savingToFileChunks = Promise.resolve()
       this.savingToFileFileStreamWriter = fileStream.getWriter()
     }
-    const fileReader = useStreamSaver ? new FileReader() : null
-    const fileStream = useStreamSaver ? createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`) : null
 
 
     this.savingToFileMediaRecorder.start()
@@ -338,19 +335,19 @@ class VideoSurvl extends Component {
 
     this.savingToFileMediaRecorder.onstart = () => {
       this.savingToFileStatus = 'started'
-      console.log('---------------------onstart')
+      console.log('MediaRecorder - onstart')
     }
     this.savingToFileMediaRecorder.onstop = () => {
-      console.log('---------------------onstop')
+      console.log('MediaRecorder - onstop')
     }
     this.savingToFileMediaRecorder.onpause = () => {
-      console.log('---------------------onpause')
+      console.log('MediaRecorder - onpause')
     }
     this.savingToFileMediaRecorder.onresume = () => {
-      console.log('---------------------onresume')
+      console.log('MediaRecorder - onresume')
     }
     this.savingToFileMediaRecorder.ondataavailable = ({ data }) => {
-      console.log('---------------------ondataavailable')
+      console.log('MediaRecorder - ondataavailable')
       if (useStreamSaver) {
         this.savingToFileChunks = this.savingToFileChunks.then(() => new Promise(resolve => {
           fileReader.onload = () => {
