@@ -314,7 +314,7 @@ class VideoSurvl extends Component {
     this.savingToFileName = `${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`
 
     const fileReader = useStreamSaver ? new FileReader() : null
-    const fileStream = useStreamSaver ? createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH-mm-ss')}.mp4`) : null
+    const fileStream = useStreamSaver ? createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-DD-MM_HH:mm:ss')}.mp4`) : null
     if (useStreamSaver) {
       this.savingToFileChunks = Promise.resolve()
       this.savingToFileFileStreamWriter = fileStream.getWriter()

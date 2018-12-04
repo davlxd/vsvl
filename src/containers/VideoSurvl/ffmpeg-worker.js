@@ -17,7 +17,8 @@ export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '') => 
         worker.postMessage({
           type: "run",
           MEMFS: [{name: "in.mp4", data: new Uint8Array(fileReader.result)}],
-          arguments: ['-i', 'in.mp4', '-c', 'copy', 'out.mp4']})
+          // arguments: ['-i', 'in.mp4', '-c', 'copy', 'out.mp4']})
+          arguments: ['-i', 'in.mp4', 'out.mp4']})
       }
       fileReader.readAsArrayBuffer(blob)
       break

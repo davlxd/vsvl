@@ -88,9 +88,9 @@ const styles = theme => ({
   createANewFileLabel: {
     marginBottom: theme.spacing.unit * 1,
   },
-  ul: {
-    marginTop: theme.spacing.unit * 0.3,
-    marginBottom: theme.spacing.unit * 1.3,
+  aboutParagraph2: {
+    marginTop: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit * 2,
   },
   a: {
     color: 'inherit'
@@ -212,18 +212,10 @@ class SettingsSlider extends Component {
             <Paper elevation={1} className={classes.paperSettingColumn} style={{display: 'flex', flexDirection: 'column'}}>
               <Typography variant="h5" gutterBottom>About</Typography>
               <Divider className={classes.dividerBelowTitle}/>
-              <Typography variant="body1"> This Web application is made possible with the following awesome projects: </Typography>
-              <ul className={classes.ul}>
-                <li><Typography variant="body1"><a href='https://wordpress.com/' target='_blank' rel="noopener noreferrer" className={classes.a}>Wordpress</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://reactjs.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>React</a>, <a href='https://redux.js.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>Redux</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://material-ui.com' target='_blank' rel="noopener noreferrer" className={classes.a}>Material UI</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://docs.opencv.org/3.4/index.html' target='_blank' rel="noopener noreferrer" className={classes.a}>OpenCV.js</a>, <a href='https://github.com/Kagami/ffmpeg.js' target='_blank' rel="noopener noreferrer" className={classes.a}>FFmpeg.js</a></Typography></li>
-                <li><Typography variant="body1"><a href='https://github.com/jimmywarting/StreamSaver.js' target='_blank' rel="noopener noreferrer" className={classes.a}>StreamSaver.js</a>, <a href='https://github.com/eligrey/FileSaver.js/' target='_blank' rel="noopener noreferrer" className={classes.a}>FileSaver.js</a></Typography></li>
-              </ul>
-              <Typography variant="body1" gutterBottom>You can contact us for bugs, feedback, feature requests or something else through following channels: </Typography>
-              <ul className={classes.ul} style={{flexGrow: 1}}>
-                <li><Typography variant="body1"><a href='mailto:contact@videosurveillance.webcam' className={classes.a}>Email</a></Typography></li>
-              </ul>
+              <Typography variant="body1">
+                This Web application is made possible with many awesome projects: <a href='https://wordpress.com/' target='_blank' rel="noopener noreferrer" className={classes.a}>Wordpress</a>, <a href='https://nodejs.org/en/' target='_blank' rel="noopener noreferrer" className={classes.a}>Node</a>, <a href='https://reactjs.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>React</a>, <a href='https://redux.js.org/' target='_blank' rel="noopener noreferrer" className={classes.a}>Redux</a>, <a href='https://material-ui.com' target='_blank' rel="noopener noreferrer" className={classes.a}>Material UI</a>, <a href='https://docs.opencv.org/3.4/index.html' target='_blank' rel="noopener noreferrer" className={classes.a}>OpenCV.js</a>, <a href='https://github.com/Kagami/ffmpeg.js' target='_blank' rel="noopener noreferrer" className={classes.a}>FFmpeg.js</a>, <a href='https://github.com/jimmywarting/StreamSaver.js' target='_blank' rel="noopener noreferrer" className={classes.a}>StreamSaver.js</a>, <a href='https://github.com/eligrey/FileSaver.js/' target='_blank' rel="noopener noreferrer" className={classes.a}>FileSaver.js</a> and so on.
+              </Typography>
+              <Typography variant="body1" gutterBottom style={{flexGrow: 1}} className={classes.aboutParagraph2}>You can contact us for bugs, feedback, feature requests or something else through <a href='mailto:contact@videosurveillance.webcam' className={classes.a}>Email</a> .</Typography>
               <Typography variant="caption" gutterBottom><a href='/terms-of-service' target='_blank' rel="noopener noreferrer" className={classes.a}>Terms of Service</a>, <a href='/privacy-policy' target='_blank' rel="noopener noreferrer" className={classes.a}>Privacy Policy</a>, and <a href='/cookie-policy' target='_blank' rel="noopener noreferrer" className={classes.a}>Cookie Policy</a></Typography>
             </Paper>
           </Paper>
