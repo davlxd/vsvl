@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 7 //message = 'Add CircularProgress'
+const version = 8 //message = 'ffmpeg.js'
 
 class VersionControl extends Component {
   componentDidMount() {
