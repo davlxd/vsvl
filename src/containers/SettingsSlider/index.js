@@ -152,7 +152,7 @@ class SettingsSlider extends Component {
 
   handleSplitFileTimeChange = event => {
     const value = event.target.value
-    if (value === 'on-the-10-min' || value === 'on-the-30-min' || value === 'on-the-hour') { //TODO and if not saving raw
+    if ((value === 'on-the-10-min' || value === 'on-the-30-min' || value === 'on-the-hour') && !this.props.savingRawVideoFiles) {
       this.setState({
         putOnEncodingCouldTakeLongTimeSnack: true
       })
