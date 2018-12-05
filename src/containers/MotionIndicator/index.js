@@ -54,11 +54,11 @@ class MotionIndicator extends Component {
           <DirectionsRunIcon className={classes.motionIcon} style={{visibility: motioning ? 'visible' : 'hidden'}} color="action" fontSize="large"/>
         </Tooltip>
 
-        <Tooltip title="Saving the video">
+        <Tooltip title="Saving captured video">
           <SavingIcon className={classes.savingIcon} style={{visibility: saving ? 'visible' : 'hidden'}} color="action" fontSize="large"/>
         </Tooltip>
 
-        <Tooltip title="Preparing video files">
+        <Tooltip title="Preparing video file">
           <EncodingIcon className={classes.encodingIcon} style={{visibility: encoding ? 'visible' : 'hidden'}} color="action" fontSize="large"/>
         </Tooltip>
       </div>

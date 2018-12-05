@@ -1,6 +1,6 @@
 import saveAs from 'file-saver'
 
-export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '', startHook = () => {}, finishHook = () => {}) => {
+export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '', startHook = () => {}, inProgressHook = () => {}, finishHook = () => {}) => {
   loadingTSMarker(Date.now())
   const worker = new Worker("/ffmpeg-worker-mp4.js")
   worker.onmessage = (e) => {
@@ -24,9 +24,11 @@ export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '', sta
       fileReader.readAsArrayBuffer(blob)
       break
     case "stdout":
+      inProgressHook()
       console.log('ffmpeg-worker stdout:', msg.data)
       break
     case "stderr":
+      inProgressHook()
       console.log('ffmpeg-worker stderr:', msg.data)
       break
     case 'done':
