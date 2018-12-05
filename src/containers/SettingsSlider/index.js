@@ -81,10 +81,17 @@ const styles = theme => ({
     height: theme.spacing.unit * 5,
   },
   filePrefixTextField: {
-    marginBottom: theme.spacing.unit * 4,
+    // marginBottom: theme.spacing.unit * 4,
+  },
+  savingRawVideoFilesCheckbox: {
+    marginTop: theme.spacing.unit * 1,
+    marginBottom: theme.spacing.unit * 2,
   },
   fileSplitSizeTextField: {
     width: theme.spacing.unit * 10,
+  },
+  splitFileTimeSelect: {
+    marginBottom: theme.spacing.unit * 1,
   },
   createANewFileLabel: {
     marginBottom: theme.spacing.unit * 1,
@@ -160,6 +167,7 @@ class SettingsSlider extends Component {
       alertingOnMotion,
       alertingOnMotionStrategy,
       savingToFiles,
+      savingRawVideoFiles,
       savingToFilesOnlyMotionDetected,
       savingToFilesStrategy,
       savingToFilesPrefix,
@@ -201,6 +209,7 @@ class SettingsSlider extends Component {
               <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggleSavingToFiles} color="primary" /> } label="Saving to files" />
               <FormControlLabel control={ <Checkbox checked={savingToFilesOnlyMotionDetected} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color={savingToFiles ? 'primary' : 'default'} /> } label="Saving only when motion detected" />
               <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} value={savingToFilesPrefix} fullWidth onChange={this.handleChange('savingToFilesPrefix')} margin="normal" color={savingToFiles ? 'primary' : 'default'}/>
+              <FormControlLabel className={classes.savingRawVideoFilesCheckbox} control={ <Checkbox checked={savingRawVideoFiles} onChange={this.handleToggle('savingRawVideoFiles')} color={savingToFiles ? 'primary' : 'default'} /> } label={<span>Saving <a href='/faq' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>raw video files</a></span>}/>
               <FormControl component="fieldset" className={classes.formControl} color={savingToFiles ? 'primary' : 'default'}>
                 <FormLabel component="legend" className={classes.createANewFileLabel}>Create a new file</FormLabel>
                 <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={savingToFilesStrategy} onChange={this.handleChange('savingToFilesStrategy')}>
@@ -210,7 +219,7 @@ class SettingsSlider extends Component {
                 </RadioGroup>
               </FormControl>
               <TextField id="file-split-size" label="Size in MB" className={classes.fileSplitSizeTextField} style={{display: savingToFilesStrategy === 'file-size' ? null : 'none'}} value={splitFileSize} onChange={this.handleChange('splitFileSize')} margin="none" color={savingToFiles ? 'primary' : 'default'}/>
-              <FormControl className={classes.formControl} style={{display: savingToFilesStrategy === 'time' ? null : 'none'}}>
+              <FormControl className={classes.splitFileTimeSelect} style={{display: savingToFilesStrategy === 'time' ? null : 'none'}}>
                 <Select value={splitFileTime} onChange={this.handleSplitFileTimeChange} inputProps={{ name: 'split-file-name', id: 'split-file-name', }}>
                   <MenuItem value='on-the-1-min'>on the minute</MenuItem>
                   <MenuItem value='on-the-2-min'>on the 2 min</MenuItem>

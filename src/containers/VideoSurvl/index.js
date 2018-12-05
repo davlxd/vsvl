@@ -255,11 +255,11 @@ class VideoSurvl extends Component {
         () => {
           const savingToFileNameCopy = this.savingToFileName
           const fileSaverChunksCopy = this.fileSaverChunks.slice(0)
-          if (this.ffmpegLoadingTime() < 4000) {
-            console.log('ffmpeg-worker is ready, use it')
-            ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy), savingToFileNameCopy, this.props.ffmpegStartedProcessingFile, () => {if (!this.props.encoding) this.props.ffmpegStartedProcessingFile() }, this.props.ffmpegFinishedProcessingFile)
+          if (this.ffmpegLoadingTime() < 4000 && !this.props.savingRawVideoFiles) {
+            console.log('ffmpeg-worker is ready and not rawing, use it')
+            ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy), savingToFileNameCopy, () => this.props.ffmpegStartedProcessingFile(), () => {if (!this.props.encoding) this.props.ffmpegStartedProcessingFile() }, () => this.props.ffmpegFinishedProcessingFile())
           } else {
-            console.log('ffmpeg-worker is not ready, dump directly')
+            console.log('ffmpeg-worker is not ready, or rawing, dump directly')
             saveAs(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
             this.setState({
               puOnUseVlcSnack: true

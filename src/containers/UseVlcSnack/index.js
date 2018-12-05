@@ -10,19 +10,17 @@ class UseVlcSnack extends Component {
     this.bannerDisplayedBefore = this.bannerFlag && this.bannerFlag.useVlc
   }
 
-  componentDidUpdate(prevProps) {
-    if (!prevProps.on && this.props.on) {
-      const newFlag = this.bannerFlag || {}
-      newFlag.useVlc = true
-      localStorage.setItem('banner', JSON.stringify(newFlag))
-      this.bannerDisplayedBefore = true
-    }
+  off() {
+    const newFlag = this.bannerFlag || {}
+    newFlag.useVlc = true
+    localStorage.setItem('banner', JSON.stringify(newFlag))
+    this.bannerDisplayedBefore = true
   }
 
   render() {
     const {on, ...rest} = this.props
     return (
-      <GenericSnack duration={20000} message={<span id="message-id">If you have trouble opening downloaded files, try <img width='15px' src='/logo-vlc.png' alt='VLC'/> <a href='https://www.videolan.org' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>VLC</a> or this browser itself.</span>} {...rest} on={this.bannerDisplayedBefore ? false : on}/>
+      <GenericSnack duration={20000} message={<span id="message-id">If you have trouble opening downloaded files, try <img width='15px' src='/logo-vlc.png' alt='VLC'/> <a href='https://www.videolan.org' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>VLC</a> or this browser itself.</span>} {...rest} on={this.bannerDisplayedBefore ? false : on} off={() => this.off()}/>
     )
   }
 }
