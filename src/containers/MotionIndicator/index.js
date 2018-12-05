@@ -7,6 +7,8 @@ import { withStyles } from '@material-ui/core/styles'
 
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun'
 import SavingIcon from '@material-ui/icons/SaveAlt'
+import EncodingIcon from '@material-ui/icons/VideoLibraryOutlined'
+// import EncodingIcon from '@material-ui/icons/VideoLibrary'
 
 
 const styles = theme => ({
@@ -25,6 +27,9 @@ const styles = theme => ({
   savingIcon: {
     marginTop: theme.spacing.unit * 1,
   },
+  encodingIcon: {
+    marginTop: theme.spacing.unit * 1,
+  },
   '@keyframes flash': {
     '0%': { opacity: 1, },
     '50%': { opacity: .1, },
@@ -41,7 +46,7 @@ class MotionIndicator extends Component {
 
 
   render() {
-    const { classes, motioning, saving } = this.props
+    const { classes, motioning, saving, encoding } = this.props
 
     return (
       <div className={classes.root}>
@@ -49,8 +54,12 @@ class MotionIndicator extends Component {
           <DirectionsRunIcon className={classes.motionIcon} style={{visibility: motioning ? 'visible' : 'hidden'}} color="action" fontSize="large"/>
         </Tooltip>
 
-        <Tooltip title="Saving to files">
+        <Tooltip title="Saving the video">
           <SavingIcon className={classes.savingIcon} style={{visibility: saving ? 'visible' : 'hidden'}} color="action" fontSize="large"/>
+        </Tooltip>
+
+        <Tooltip title="Preparing video files">
+          <EncodingIcon className={classes.encodingIcon} style={{visibility: encoding ? 'visible' : 'hidden'}} color="action" fontSize="large"/>
         </Tooltip>
       </div>
 

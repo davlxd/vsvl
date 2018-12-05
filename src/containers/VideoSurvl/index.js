@@ -5,7 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 
 import saveAs from 'file-saver'
 
-import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE, SAVING_FILES, SAVING_COMPLETE } from '../../actions'
+import { APPLY_VIDEO_PARAMS_AS_SETTINGS, MOTION_DETECTED, MOTION_GONE, SAVING_FILES, SAVING_COMPLETE, FFMPEG_STARTED_PROCESSING_FILE, FFMPEG_FINISHED_PROCESSING_FILE } from '../../actions'
 import NeedCameraSnack from '../../components/NeedCameraSnack'
 import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 
@@ -257,19 +257,19 @@ class VideoSurvl extends Component {
           const fileSaverChunksCopy = this.fileSaverChunks.slice(0)
           if (this.ffmpegLoadingTime() < 4000) {
             console.log('ffmpeg-worker is ready, use it')
-            ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy), savingToFileNameCopy)
+            ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy), savingToFileNameCopy, this.props.ffmpegStartedProcessingFile, this.props.ffmpegFinishedProcessingFile)
           } else {
             console.log('ffmpeg-worker is not ready, dump directly')
             saveAs(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
+            this.setState({
+              puOnUseVlcSnack: true
+            })
             ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => { this.ffmpegLoadedTS = ts; console.log('this.ffmpegLoadingTime(): ', this.ffmpegLoadingTime()) })
           }
           this.fileSaverChunks = []
           this.savingToFileMediaRecorder = null
           this.props.savingComplete()
           this.savingToFileStatus = 'closed'
-          this.setState({
-            puOnUseVlcSnack: true
-          })
           if (recreate){
             this.kickOffSavingToFile()
           }
@@ -508,7 +508,13 @@ const mapDispatchToProps = (dispatch) => ({
   },
   savingComplete: () => {
     dispatch(SAVING_COMPLETE)
-  }
+  },
+  ffmpegStartedProcessingFile: () => {
+    dispatch(FFMPEG_STARTED_PROCESSING_FILE)
+  },
+  ffmpegFinishedProcessingFile: () => {
+    dispatch(FFMPEG_FINISHED_PROCESSING_FILE)
+  },
 })
 
 export default withStyles(styles)(

@@ -1,6 +1,6 @@
 import saveAs from 'file-saver'
 
-export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '') => {
+export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '', startHook = () => {}, finishHook = () => {}) => {
   loadingTSMarker(Date.now())
   const worker = new Worker("/ffmpeg-worker-mp4.js")
   worker.onmessage = (e) => {
@@ -18,7 +18,8 @@ export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '') => 
           type: "run",
           MEMFS: [{name: "in.mp4", data: new Uint8Array(fileReader.result)}],
           // arguments: ['-i', 'in.mp4', '-c', 'copy', 'out.mp4']})
-          arguments: ['-i', 'in.mp4', 'out.mp4']})
+          arguments: ['-i', 'in.mp4', '-preset', 'veryfast', 'out.mp4']})
+        startHook()
       }
       fileReader.readAsArrayBuffer(blob)
       break
@@ -33,6 +34,7 @@ export default (loadingTSMarker, loadedTSMarker, blob = null, fileName = '') => 
       if (msg.data.MEMFS.length > 0) {
         saveAs(new Blob([msg.data.MEMFS[0].data]), fileName)
       }
+      finishHook()
       worker.terminate()
       break
     case "exit":
