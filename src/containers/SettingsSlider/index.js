@@ -21,6 +21,7 @@ import IconButton from '@material-ui/core/IconButton'
 import SettingsIcon from '@material-ui/icons/Settings'
 
 import BrowserCannotSavingFilesSnack from '../../components/BrowserCannotSavingFilesSnack'
+import EncodingCouldTakeLongTimeSnack from '../../components/EncodingCouldTakeLongTimeSnack'
 
 import browser from 'browser-detect'
 
@@ -101,6 +102,7 @@ class SettingsSlider extends Component {
   state = {
     checked: false,
     putOnBrowserCannotSavingFilesSnack: false,
+    putOnEncodingCouldTakeLongTimeSnack: false,
   }
 
   componentDidMount() {
@@ -108,7 +110,7 @@ class SettingsSlider extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.consent) {
+    if (this.props.consent && JSON.stringify(prevProps.settings) !== JSON.stringify(this.props.settings) ) {
       localStorage.setItem('settings', JSON.stringify(this.props.settings))
     }
   }
@@ -140,6 +142,17 @@ class SettingsSlider extends Component {
     this.props.alterSettings(name, event.target.value)
   }
 
+
+  handleSplitFileTimeChange = event => {
+    const value = event.target.value
+    if (value === 'on-the-10-min' || value === 'on-the-30-min' || value === 'on-the-hour') { //TODO and if not saving raw
+      this.setState({
+        putOnEncodingCouldTakeLongTimeSnack: true
+      })
+    }
+    this.handleChange('splitFileTime')(event)
+  }
+
   render() {
     const {
       classes,
@@ -153,7 +166,7 @@ class SettingsSlider extends Component {
       splitFileSize,
       splitFileTime,
      } = this.props
-    const { checked, putOnBrowserCannotSavingFilesSnack } = this.state
+    const { checked, putOnBrowserCannotSavingFilesSnack, putOnEncodingCouldTakeLongTimeSnack } = this.state
 
     return (
       <div className={classes.root}>
@@ -198,7 +211,7 @@ class SettingsSlider extends Component {
               </FormControl>
               <TextField id="file-split-size" label="Size in MB" className={classes.fileSplitSizeTextField} style={{display: savingToFilesStrategy === 'file-size' ? null : 'none'}} value={splitFileSize} onChange={this.handleChange('splitFileSize')} margin="none" color={savingToFiles ? 'primary' : 'default'}/>
               <FormControl className={classes.formControl} style={{display: savingToFilesStrategy === 'time' ? null : 'none'}}>
-                <Select value={splitFileTime} onChange={this.handleChange('splitFileTime')} inputProps={{ name: 'split-file-name', id: 'split-file-name', }}>
+                <Select value={splitFileTime} onChange={this.handleSplitFileTimeChange} inputProps={{ name: 'split-file-name', id: 'split-file-name', }}>
                   <MenuItem value='on-the-1-min'>on the minute</MenuItem>
                   <MenuItem value='on-the-2-min'>on the 2 min</MenuItem>
                   <MenuItem value='on-the-5-min'>on the 5 min</MenuItem>
@@ -221,6 +234,7 @@ class SettingsSlider extends Component {
           </Paper>
         </Slide>
         <BrowserCannotSavingFilesSnack on={putOnBrowserCannotSavingFilesSnack} off={() => {this.setState({putOnBrowserCannotSavingFilesSnack: false})}}/>
+        <EncodingCouldTakeLongTimeSnack on={putOnEncodingCouldTakeLongTimeSnack} off={() => {this.setState({putOnEncodingCouldTakeLongTimeSnack: false})}}/>
       </div>
     )
   }
