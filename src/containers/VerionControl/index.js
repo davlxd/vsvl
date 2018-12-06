@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 8 //message = 'ffmpeg.js'
+const version = 9 //message = 'Fix file name'
 
 class VersionControl extends Component {
   componentDidMount() {

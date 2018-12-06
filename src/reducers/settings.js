@@ -14,7 +14,7 @@ const initialState = {
   savingToFilesOnlyMotionDetected: true,
   savingToFilesStrategy: 'time',
   splitFileSize: '10',
-  splitFileTime: 'on-the-10-min',
+  splitFileTime: 'on-the-1-min',
 }
 
 
