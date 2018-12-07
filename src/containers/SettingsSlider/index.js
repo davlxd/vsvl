@@ -9,6 +9,7 @@ import Divider from '@material-ui/core/Divider'
 import Slide from '@material-ui/core/Slide'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormControl from '@material-ui/core/FormControl'
+import Tooltip from '@material-ui/core/Tooltip'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
@@ -207,7 +208,9 @@ class SettingsSlider extends Component {
               <Typography variant="h5" gutterBottom>Saving to Files</Typography>
               <Divider className={classes.dividerBelowTitle}/>
               <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggleSavingToFiles} color="primary" /> } label="Saving to files" />
-              <FormControlLabel control={ <Checkbox checked={savingToFilesOnlyMotionDetected} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color={savingToFiles ? 'primary' : 'default'} /> } label="Saving only when motion detected" />
+              <Tooltip title='Saving will pause if no motion detected, will resume if motion detected again'>
+                <FormControlLabel control={ <Checkbox checked={savingToFilesOnlyMotionDetected} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color={savingToFiles ? 'primary' : 'default'} /> } label="Saving only when motion detected" />
+              </Tooltip>
               <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} value={savingToFilesPrefix} fullWidth onChange={this.handleChange('savingToFilesPrefix')} margin="normal" color={savingToFiles ? 'primary' : 'default'}/>
               <FormControlLabel className={classes.savingRawVideoFilesCheckbox} control={ <Checkbox checked={savingRawVideoFiles} onChange={this.handleToggle('savingRawVideoFiles')} color={savingToFiles ? 'primary' : 'default'} /> } label={<span>Saving <a href='/faq' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>raw video files</a></span>}/>
               <FormControl component="fieldset" className={classes.formControl} color={savingToFiles ? 'primary' : 'default'}>
