@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 9 //message = 'Fix file name'
+const version = 10 //message = 'node-schedule'
 
 class VersionControl extends Component {
   componentDidMount() {
