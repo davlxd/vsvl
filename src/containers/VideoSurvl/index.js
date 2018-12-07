@@ -14,6 +14,7 @@ import UseVlcSnack from '../UseVlcSnack'
 import onAndDelayOff from './on-and-delay-off'
 import ffmpegWorker from './ffmpeg-worker'
 const moment = require('moment')
+const schedule = require('node-schedule')
 
 const useStreamSaver = false
 
@@ -70,7 +71,7 @@ class VideoSurvl extends Component {
     this.videoRef = React.createRef()
     this.canvasRef = React.createRef()
 
-    this.currentTimeIntervalHandle = null
+    this.splitFileBasedOnTimeScheduleJob = null
 
     this.delayMotionGoneTimeoutHandle = null
     this.motionDetectCount = 0
@@ -311,10 +312,10 @@ class VideoSurvl extends Component {
 
     const mediaStream = this.canvasRef.current.captureStream(frameRate)
     this.savingToFileMediaRecorder = new MediaRecorder(mediaStream)
-    this.savingToFileName = `${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-MM-DD_HH:mm:ss')}.mp4`
+    this.savingToFileName = `${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-MM-DD_HH-mm-ss')}.mp4`
 
     const fileReader = useStreamSaver ? new FileReader() : null
-    const fileStream = useStreamSaver ? createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-MM-DD_HH:mm:ss')}.mp4`) : null
+    const fileStream = useStreamSaver ? createWriteStream(`${savingToFilesPrefix}_${Date.now()}_${moment().format('YYYY-MM-DD_HH-mm-ss')}.mp4`) : null
     if (useStreamSaver) {
       this.savingToFileChunks = Promise.resolve()
       this.savingToFileFileStreamWriter = fileStream.getWriter()
@@ -364,33 +365,42 @@ class VideoSurvl extends Component {
   }
 
 
-  splitFileBasedOnTime() {
-    const s = Math.round(Date.now() / 1000)
+  rescheduleSplitFileBasedOnTime() {
+    if (this.savingToFileStatus !== 'started' && this.props.savingToFilesStrategy !== 'time') {
+      return
+    }
 
-    if (this.savingToFileStatus === 'started' && this.props.savingToFilesStrategy === 'time') {
-      let m = 60
-      switch (this.props.splitFileTime) {
-        case 'on-the-1-min': m = 60 * 1; break;
-        case 'on-the-2-min': m = 60 * 2; break;
-        case 'on-the-5-min': m = 60 * 5; break;
-        case 'on-the-10-min': m = 60 * 10; break;
-        case 'on-the-30-min': m = 60 * 30; break;
-        case 'on-the-hour': m = 60 * 60; break;
-        default: m = 60
-      }
+    let spec = '* * * * *'
+    switch (this.props.splitFileTime) {
+      case 'on-the-1-min': spec = '* * * * *'; break;
+      case 'on-the-2-min': spec = '*/2 * * * *'; break;
+      case 'on-the-5-min': spec = '*/5 * * * *'; break;
+      case 'on-the-10-min': spec = '*/10 * * * *'; break;
+      case 'on-the-30-min': spec = '*/30 * * * *'; break;
+      case 'on-the-hour': spec = '0 * * * *'; break;
+      default: spec = '* * * * *'
+    }
 
-      console.log(s, m, s % m)
-
-      if (s % m === 0) {
-        this.closeCurrentFile(true)
-      }
+    if (this.splitFileBasedOnTimeScheduleJob == null) {
+      console.log('Schedule a split based on time:', spec)
+      this.splitFileBasedOnTimeScheduleJob = schedule.scheduleJob(spec, () => this.closeCurrentFile(true))
+    } else {
+      console.log('Rechedule a split based on time:', spec)
+      this.splitFileBasedOnTimeScheduleJob.reschedule(spec)
     }
   }
 
+  cancelSplitFileBasedOnTimeSchedule() {
+    if (this.splitFileBasedOnTimeScheduleJob != null) {
+      console.log('Cancel a split based on time')
+      this.splitFileBasedOnTimeScheduleJob.cancel()
+      this.splitFileBasedOnTimeScheduleJob = null
+    }
+  }
 
   componentDidMount() {
     this.initiateCamera()
-    this.currentTimeIntervalHandle = setInterval(() => this.splitFileBasedOnTime(), 1000)
+    this.rescheduleSplitFileBasedOnTime()
     window.onresize = () => this.forceUpdate()
   }
 
@@ -400,6 +410,7 @@ class VideoSurvl extends Component {
       savingToFiles,
       savingToFilesOnlyMotionDetected,
       savingToFilesStrategy,
+      splitFileTime,
       motioning,
     } = this.props
 
@@ -439,6 +450,14 @@ class VideoSurvl extends Component {
     if (savingToFilesStrategy !== 'motion-detected' && !motioning && userCheckSavingToFilesOnlyMotionDetected) {
       this.pauseSavingToFile()
     }
+
+    if (prevProps.savingToFilesStrategy !== savingToFilesStrategy || prevProps.splitFileTime !== splitFileTime) {
+      this.rescheduleSplitFileBasedOnTime()
+    }
+
+    if (prevProps.savingToFilesStrategy !== savingToFilesStrategy && savingToFilesStrategy !== 'time') {
+      this.cancelSplitFileBasedOnTimeSchedule()
+    }
   }
 
   componentWillUnmount() {
@@ -454,10 +473,7 @@ class VideoSurvl extends Component {
       this.fgbg.delete()
       this.fgbg = null
     }
-    if (this.currentTimeIntervalHandle != null) {
-      clearInterval(this.currentTimeIntervalHandle)
-      this.currentTimeIntervalHandle = null
-    }
+    this.cancelSplitFileBasedOnTimeSchedule()
   }
 
   render() {
