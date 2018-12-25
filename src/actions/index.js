@@ -69,3 +69,20 @@ export const ALTER_SETTING = (name, value) => ({
   name,
   value
 })
+
+
+export const NEW_FFMPEG_WORK = id => ({
+  type: 'NEW_FFMPEG_WORK',
+  id
+})
+
+export const FFMPEG_WORK_FINISHED = id => ({
+  type: 'FFMPEG_WORK_FINISHED',
+  id
+})
+
+export const FFMPEG_WORK_UPDATE_PROGRESS = (id, percentage) => ({
+  type: 'FFMPEG_WORK_UPDATE_PROGRESS',
+  id,
+  percentage
+})

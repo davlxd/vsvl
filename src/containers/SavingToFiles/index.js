@@ -4,11 +4,11 @@ import { connect } from 'react-redux'
 
 import saveAs from 'file-saver'
 
-import { SAVING_FILES, SAVING_COMPLETE, FFMPEG_STARTED_PROCESSING_FILE, FFMPEG_FINISHED_PROCESSING_FILE } from '../../actions'
+import { SAVING_FILES, SAVING_COMPLETE, NEW_FFMPEG_WORK, FFMPEG_WORK_FINISHED, FFMPEG_WORK_UPDATE_PROGRESS } from '../../actions'
 
 import UseVlcSnack from '../UseVlcSnack'
 
-import ffmpegWorker from './ffmpeg-worker'
+import FFmpegWorker from './ffmpeg-worker'
 
 const moment = require('moment')
 const schedule = require('node-schedule')
@@ -21,6 +21,8 @@ class SavingToFiles extends Component {
     this.splitFileBasedOnTimeScheduleJob = null
 
     this.savingToFileStatus = 'closed'
+    this.savingToFileStartingTS = 0
+    this.savingToFileFinishedTS = 0
     this.savingToFileName = ''
     this.savingToFileMediaRecorder = null
     this.savingToFileChunks = null
@@ -28,8 +30,7 @@ class SavingToFiles extends Component {
 
     this.fileSaverChunks = []
 
-    this.ffmpegLoadingTS = 0
-    this.ffmpegLoadedTS = Infinity
+    this.ffmpegLoadTime = Infinity
 
     this.state = {
       putOnUseVlcSnack: false,
@@ -53,16 +54,29 @@ class SavingToFiles extends Component {
       () => {
         const savingToFileNameCopy = this.savingToFileName
         const fileSaverChunksCopy = this.fileSaverChunks.slice(0)
-        if (this.ffmpegLoadingTime() < 4000 && !this.props.savingRawVideoFiles) {
+        const savingToFileDuration = this.savingToFileFinishedTS - this.savingToFileStartingTS
+        if (this.ffmpegLoadTime < 4000 && !this.props.savingRawVideoFiles) {
           console.log('ffmpeg-worker is ready and not rawing, use it')
-          ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy), savingToFileNameCopy, () => this.props.ffmpegStartedProcessingFile(), () => {if (!this.props.encoding) this.props.ffmpegStartedProcessingFile() }, () => this.props.ffmpegFinishedProcessingFile())
+          // ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy), savingToFileNameCopy, () => this.props.ffmpegStartedProcessingFile(), () => {if (!this.props.encoding) this.props.ffmpegStartedProcessingFile() }, () => this.props.ffmpegFinishedProcessingFile())
+          new FFmpegWorker(
+            ts => this.ffmpegLoadTime = ts,
+            new Blob(fileSaverChunksCopy),
+            savingToFileNameCopy,
+            this.savingToFileFinishedTS - this.savingToFileStartingTS,
+            id => this.props.newFFmpegWorkStarted(id),
+            (id, percentage) => this.props.ffmpegWorkUpdateProgress(id, percentage),
+            id => this.props.ffmpegWorkFinished(id)
+          )
         } else {
           console.log('ffmpeg-worker is not ready, or rawing, dump directly')
           saveAs(new Blob(fileSaverChunksCopy, { 'type' : 'video/mp4' }), savingToFileNameCopy)
           this.setState({
             putOnUseVlcSnack: true
           })
-          ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => { this.ffmpegLoadedTS = ts; console.log('this.ffmpegLoadingTime(): ', this.ffmpegLoadingTime()) })
+          new FFmpegWorker(ts => {
+            this.ffmpegLoadTime = ts
+            console.log('FFmpeg library loaded time: ', ts)
+          })
         }
         this.fileSaverChunks = []
         this.savingToFileMediaRecorder = null
@@ -126,9 +140,11 @@ class SavingToFiles extends Component {
 
     this.savingToFileMediaRecorder.onstart = () => {
       this.savingToFileStatus = 'started'
+      this.savingToFileStartingTS = Date.now()
       console.log('MediaRecorder - onstart')
     }
     this.savingToFileMediaRecorder.onstop = () => {
+      this.savingToFileFinishedTS = Date.now()
       console.log('MediaRecorder - onstop')
     }
     this.savingToFileMediaRecorder.onpause = () => {
@@ -177,7 +193,11 @@ class SavingToFiles extends Component {
   }
 
   componentDidMount() {
-    ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => { this.ffmpegLoadedTS = ts; console.log('this.ffmpegLoadingTime(): ', this.ffmpegLoadingTime()) })
+    // ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => { this.ffmpegLoadedTS = ts; console.log('this.ffmpegLoadingTime(): ', this.ffmpegLoadingTime()) })
+    new FFmpegWorker(ts => {
+      this.ffmpegLoadTime = ts
+      console.log('FFmpeg library loaded time: ', ts)
+    })
     this.rescheduleSplitFileBasedOnTime()
   }
 
@@ -192,6 +212,7 @@ class SavingToFiles extends Component {
     } = this.props
 
     const streamBecomeReady = !prevProps.streamReady && streamReady
+
     const userSwitchOnSavingToFiles = !prevProps.savingToFiles && savingToFiles
     const userSwitchOffSavingToFiles = prevProps.savingToFiles && !savingToFiles
 
@@ -269,12 +290,21 @@ const mapDispatchToProps = (dispatch) => ({
   savingComplete: () => {
     dispatch(SAVING_COMPLETE)
   },
-  ffmpegStartedProcessingFile: () => {
-    dispatch(FFMPEG_STARTED_PROCESSING_FILE)
+  // ffmpegStartedProcessingFile: () => {
+  //   dispatch(FFMPEG_STARTED_PROCESSING_FILE)
+  // },
+  // ffmpegFinishedProcessingFile: () => {
+  //   dispatch(FFMPEG_FINISHED_PROCESSING_FILE)
+  // },
+  newFFmpegWorkStarted: id => {
+    dispatch(NEW_FFMPEG_WORK(id))
   },
-  ffmpegFinishedProcessingFile: () => {
-    dispatch(FFMPEG_FINISHED_PROCESSING_FILE)
+  ffmpegWorkFinished: id => {
+    dispatch(FFMPEG_WORK_FINISHED(id))
   },
+  ffmpegWorkUpdateProgress: (id, percentage) => {
+    dispatch(FFMPEG_WORK_UPDATE_PROGRESS(id, percentage))
+  }
 })
 
 SavingToFiles.propTypes = {
