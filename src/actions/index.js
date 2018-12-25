@@ -25,6 +25,9 @@ export const USER_CLICK_CONSENT = {
   type: 'USER_CLICK_CONSENT'
 }
 
+export const STREAM_READY = {
+  type: 'STREAM_READY'
+}
 
 export const MOTION_DETECTED = {
   type: 'MOTION_DETECTED'

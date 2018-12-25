@@ -28,8 +28,6 @@ import browser from 'browser-detect'
 
 import { ALTER_SETTING, RECOVER_SETTINGS_FROM_WEB_STORAGE, SETTINGS_SLIDER_ON, SETTINGS_SLIDER_OFF } from '../../actions'
 
-const { supported, } = window.streamSaver
-
 const styles = theme => ({
   root: {
     width: '100vw',

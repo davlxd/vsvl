@@ -1,4 +1,5 @@
 const initialState = {
+  streamReady: false,
   motioning: false,
   saving: false,
   encoding: false,
@@ -7,6 +8,11 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch(action.type) {
+    case 'STREAM_READY':
+      return {
+        ...state,
+        streamReady: true
+      }
     case 'MOTION_DETECTED':
       return {
         ...state,
