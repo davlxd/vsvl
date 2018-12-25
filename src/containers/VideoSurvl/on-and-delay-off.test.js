@@ -47,6 +47,29 @@ describe('On and Delay Off', () => {
     }, 3000)
   })
 
+  it('off will not be executed if funcOffPreq false', (done) => {
+    let marker = false
+    let handler = null
+    const { on, off } = onAndDelayOff(
+      () => marker === false,  // funcOnPreq
+      () => setTimeout(() => marker = true, 1000), // funcOn
+      () => marker === false,  // funcOffPreq
+      () => marker = false,  // funcOff
+      handleValue => handler = handleValue,  // delayOffTimeoutHandleSetter
+      () => handler,  // delayOffTimeoutHandleGetter
+      3000,  // DELAY_IN_MS
+      true // logging
+    )
+
+    on()
+    off()
+    setTimeout(() => {
+      expect(marker).toBeTruthy()
+      expect(handler).toBeNull()
+      done()
+    }, 3000)
+  })
+
   it('delayed off can be cancelled', () => {
     let marker = false
     let handler = null

@@ -20,7 +20,7 @@ export default (funcOnPreq, funcOn, funcOffPreq, funcOff, delayOffTimeoutHandleS
         setTimeout(() => {
           if (logging) console.log('executing previously scheduled off')
           delayOffTimeoutHandleSetter(null)
-          if (funcOffPreq) {
+          if (funcOffPreq()) {
             if (logging) console.log('executing off')
             funcOff()
           }
