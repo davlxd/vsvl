@@ -11,7 +11,7 @@ import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 
 import UseVlcSnack from '../UseVlcSnack'
 
-import onAndDelayOff from './on-and-delay-off'
+import ImmediateOnAndDelayOff from './immediate-on-and-delay-off'
 import ffmpegWorker from './ffmpeg-worker'
 const moment = require('moment')
 const schedule = require('node-schedule')
@@ -73,7 +73,14 @@ class VideoSurvl extends Component {
 
     this.splitFileBasedOnTimeScheduleJob = null
 
-    this.delayMotionGoneTimeoutHandle = null
+    const MOTION_GONE_DELAY = 4000
+    this.delayedMotionOff = new ImmediateOnAndDelayOff(
+      () => !this.props.motioning,  // funcOnPreq
+      () => this.props.motionDetected(),  // funcOn
+      () => this.props.motioning,  // funcOffPreq
+      () => this.props.motionGone(),  // funcOff
+      MOTION_GONE_DELAY  // DELAY_IN_MS,
+    )
     this.motionDetectCount = 0
     this.frame = null
     this.fgmask = null
@@ -143,18 +150,7 @@ class VideoSurvl extends Component {
   motionDetecting() {
     const cv = window.cv
     const MOTION_THRESHOLD = 5000
-    const MOTION_GONE_DELAY = 4000
     const MOTION_DETECT_EVERY_N_FRAME = 3
-
-    const { on: motionDetectedNow , off: motionNotDetectedNow } = onAndDelayOff(
-      () => !this.props.motioning,  // funcOnPreq
-      () => this.props.motionDetected(),  // funcOn
-      () => this.props.motioning,  // funcOffPreq
-      () => this.props.motionGone(),  // funcOff
-      handleValue => this.delayMotionGoneTimeoutHandle = handleValue,  // delayOffTimeoutHandleSetter
-      () => this.delayMotionGoneTimeoutHandle,  // delayOffTimeoutHandleGetter
-      MOTION_GONE_DELAY,  // DELAY_IN_MS
-    )
 
     this.motionDetectCount = this.motionDetectCount >= 100 ? 0 : this.motionDetectCount + 1
     if (this.motionDetectCount % MOTION_DETECT_EVERY_N_FRAME !== 0) {
@@ -166,9 +162,9 @@ class VideoSurvl extends Component {
     // console.log(cv.countNonZero(this.fgmask))
 
     if (cv.countNonZero(this.fgmask) > MOTION_THRESHOLD) {
-      motionDetectedNow()
+      this.delayedMotionOff.on()
     } else {
-      motionNotDetectedNow()
+      this.delayedMotionOff.off()
     }
   }
 
