@@ -57,12 +57,11 @@ class SavingToFiles extends Component {
         const savingToFileDuration = this.savingToFileFinishedTS - this.savingToFileStartingTS
         if (this.ffmpegLoadTime < 4000 && !this.props.savingRawVideoFiles) {
           console.log('ffmpeg-worker is ready and not rawing, use it')
-          // ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => this.ffmpegLoadedTS = ts, new Blob(fileSaverChunksCopy), savingToFileNameCopy, () => this.props.ffmpegStartedProcessingFile(), () => {if (!this.props.encoding) this.props.ffmpegStartedProcessingFile() }, () => this.props.ffmpegFinishedProcessingFile())
           new FFmpegWorker(
             ts => this.ffmpegLoadTime = ts,
             new Blob(fileSaverChunksCopy),
             savingToFileNameCopy,
-            this.savingToFileFinishedTS - this.savingToFileStartingTS,
+            savingToFileDuration,
             id => this.props.newFFmpegWorkStarted(id),
             (id, percentage) => this.props.ffmpegWorkUpdateProgress(id, percentage),
             id => this.props.ffmpegWorkFinished(id)
@@ -193,7 +192,6 @@ class SavingToFiles extends Component {
   }
 
   componentDidMount() {
-    // ffmpegWorker(ts => this.ffmpegLoadingTS = ts, ts => { this.ffmpegLoadedTS = ts; console.log('this.ffmpegLoadingTime(): ', this.ffmpegLoadingTime()) })
     new FFmpegWorker(ts => {
       this.ffmpegLoadTime = ts
       console.log('FFmpeg library loaded time: ', ts)
