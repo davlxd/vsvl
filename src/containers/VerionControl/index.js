@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 10 //message = 'node-schedule'
+const version = 11 //message = 'circular-progress'
 
 class VersionControl extends Component {
   componentDidMount() {
