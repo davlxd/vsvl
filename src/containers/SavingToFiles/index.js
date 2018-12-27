@@ -55,10 +55,13 @@ class SavingToFiles extends Component {
         const savingToFileNameCopy = this.savingToFileName
         const fileSaverChunksCopy = this.fileSaverChunks.slice(0)
         const savingToFileDuration = this.savingToFileFinishedTS - this.savingToFileStartingTS
-        if (this.ffmpegLoadTime < 4000 && !this.props.savingRawVideoFiles) {
+        if (!this.props.savingRawVideoFiles) {
           console.log('ffmpeg-worker is ready and not rawing, use it')
           new FFmpegWorker(
-            ts => this.ffmpegLoadTime = ts,
+            ts => {
+              this.ffmpegLoadTime = ts
+              console.log('FFmpeg library loaded time: ', ts)
+            },
             new Blob(fileSaverChunksCopy),
             savingToFileNameCopy,
             savingToFileDuration,

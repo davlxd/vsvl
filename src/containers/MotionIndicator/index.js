@@ -62,7 +62,7 @@ class MotionIndicator extends Component {
 
 
   render() {
-    const { classes, motioning, saving, encoding, progressList } = this.props
+    const { classes, motioning, saving, progressList } = this.props
     return (
       <div className={classes.root}>
         <div className={classes.indicator}>

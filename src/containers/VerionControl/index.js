@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 11 //message = 'circular-progress'
+const version = 12 //message = 'use ffmpeg worker even slow'
 
 class VersionControl extends Component {
   componentDidMount() {
