@@ -15,7 +15,9 @@ const styles = theme => ({
   root: {
     backgroundColor: '#f3f9fe',
     width: '100vw',
-    height: '100vh',
+    // height: '100vh',
+    paddingTop: theme.spacing.unit * 3,
+    paddingBottom: theme.spacing.unit * 3,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -27,6 +29,9 @@ const styles = theme => ({
     width: '80vw',
     maxWidth: '650px',
     overflowX: 'auto',
+  },
+  section: {
+    marginTop: theme.spacing.unit * 2,
   },
   cell: {
     textAlign: 'center',
@@ -54,8 +59,13 @@ class BrowserMatrix extends Component {
       <div className={classes.root}>
         <Paper className={classes.paper}>
           <section>
+            <Typography variant="h6">
+              Sorry ... Your browser is not suspported ...
+             </Typography>
+          </section>
+          <section className={classes.section}>
             <Typography variant="subtitle1">
-              This Web application is compatible with most modern browsers (unfortunately not with Safari <img width='15px' src='/browser-logo-safari.png' alt='safari'/>, and absolutely not with IE <img width='15px' src='/browser-logo-ie.png' alt='IE'/> ).
+              It may sound unworthy but this Web application is compatible with most modern browsers, except for Safari (that also include every browser on iOS. Yes, they are all Safari at their core).
              </Typography>
           </section>
           <br />
