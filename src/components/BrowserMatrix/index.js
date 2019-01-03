@@ -51,7 +51,7 @@ class BrowserMatrix extends Component {
       { browserName: 'opera', playback: true, motionDetect: true, saveToFiles: true, },
       { browserName: 'firefox', playback: true, motionDetect: true, saveToFiles: true, },
       { browserName: 'edge', playback: true, motionDetect: true, saveToFiles: false, },
-      { browserName: 'safari', playback: false, motionDetect: false, saveToFiles: false, },
+      { browserName: 'safari', playback: false, motionDetect: true, saveToFiles: false, },
       { browserName: 'ie', playback: false, motionDetect: false, saveToFiles: false, },
     ]
 

@@ -7,6 +7,8 @@ import { APPLY_VIDEO_PARAMS_AS_SETTINGS, STREAM_READY, MOTION_DETECTED, MOTION_G
 import NeedCameraSnack from '../../components/NeedCameraSnack'
 import SlowLoadingSnack from '../../components/SlowLoadingSnack'
 
+import mobileAndTabletDetector from '../../browsers/mobileAndTabletDetector'
+
 import SavingToFiles from '../SavingToFiles'
 
 import ImmediateOnAndDelayOff from './immediate-on-and-delay-off'
@@ -56,7 +58,6 @@ const styles = theme => ({
   }
 })
 
-
 class VideoSurvl extends Component {
   constructor(props) {
     super(props)
@@ -98,13 +99,17 @@ class VideoSurvl extends Component {
       video: { facingMode: 'environment', }
     }).then(stream => {
       this.videoRef.current.srcObject = stream
-      const { frameRate, height, width } = stream.getVideoTracks()[0].getSettings()
+      let { frameRate, height, width } = stream.getVideoTracks()[0].getSettings()
+      if (mobileAndTabletDetector() && width > height) {
+        height = width + (width=height, 0)
+      }
       const frameRatio = width / height
+
       this.props.applyVideoParamsAsSettings({
         frameRate,
         frameRatio,
-        height,
-        width
+        height : height || 480, // safari gives 0
+        width: width || 640,
       })
 
       this.cancelScheduledSlowLoadingSnack()
@@ -230,9 +235,9 @@ class VideoSurvl extends Component {
     }
     return (
       <div>
-        <video style={{display: 'none'}} width={width} height={height} className={classes.bgvOriginal} ref={this.videoRef} loop autoPlay></video>
+        <video style={{}} width={width} height={height} className={streamingStyleClass} ref={this.videoRef} loop autoPlay></video>
         {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
-        <canvas id='canvasOutput' ref={this.canvasRef} className={streamingStyleClass} width={width} height={height}></canvas>
+        <canvas style={{display: 'none'}} id='canvasOutput' ref={this.canvasRef} className={streamingStyleClass} width={width} height={height}></canvas>
         <SavingToFiles canvasRef={this.canvasRef}/>
         <div className={classes.circularProgress} style={{display: putOnCircularProgress ? null : 'none'}}>
           <CircularProgress />

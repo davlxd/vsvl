@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 
+import safariDetector from '../../browsers/safariDetector'
+
 const styles = theme => ({
   root: {
     zIndex: 4,
@@ -59,18 +61,22 @@ class MotionAlert extends Component {
         animationOn: true,
       })
       this.audio.loop = false
-      this.audio.play()
+      if (!safariDetector()) {
+        this.audio.play()
+      }
     }
 
     if (alertingOnMotion && motioning && alertingOnMotionStrategy === 'keep-alerting') {
       this.audio.loop = true
-      this.audio.play()
+      if (!safariDetector()) {
+        this.audio.play()
+      }
     }
 
     if (prevProps.motioning && !motioning) {
       this.audio.loop = false
     }
-    
+
     if (prevProps.alertingOnMotion && !alertingOnMotion) {
       this.audio.loop = false
     }
