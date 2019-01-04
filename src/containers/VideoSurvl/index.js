@@ -202,12 +202,12 @@ class VideoSurvl extends Component {
 
         this.motionDetecting()
 
-        cv.putText(this.frame, moment().format('L LTS'), {x: 10, y: 20}, cv.FONT_HERSHEY_PLAIN , 1.3, [255, 255, 255, 255])
+        let displayTimeText = moment().format('YYYY-MM-DD HH:mm:ss')
+        cv.putText(this.frame, displayTimeText, {x: 10, y: 20}, cv.FONT_HERSHEY_PLAIN , 1.3, [255, 255, 255, 255])
+        this.setState({ videoTagTimeText: displayTimeText, })
 
         cv.imshow('canvasOutput', this.frame)
         // this.writer.write(fgmask.data)
-
-        this.setState({ videoTagTimeText: moment().format('L LTS'), })
 
         // schedule the next one.
         let delay = 1000/FPS - (Date.now() - begin)
