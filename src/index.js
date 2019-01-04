@@ -7,13 +7,15 @@ import { Provider } from 'react-redux'
 import { createStore, combineReducers } from 'redux'
 import reducers from './reducers'
 
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 import LegalDoc from './components/LegalDoc'
 import BrowserMatrix from './components/BrowserMatrix'
 import Home from './containers/Home'
 
 import ieDetector from './browsers/ieDetector'
+import iOSDetector from './browsers/iOSDetector'
+import safariDetector from './browsers/safariDetector'
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
 
@@ -32,7 +34,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div>
-        <Route exact path="/" render={() => (ieDetector() ? (<Redirect to="/browser-matrix"/>) : (<Home/>) )}/>
+        <Route exact path="/" render={() => (ieDetector() || (iOSDetector() && !safariDetector()) ? (<BrowserMatrix sorry={true}/>) : (<Home/>) )}/>
         <Route path="/terms-of-service" component={LegalDoc}/>
         <Route path="/privacy-policy" component={LegalDoc}/>
         <Route path="/cookie-policy" component={LegalDoc}/>

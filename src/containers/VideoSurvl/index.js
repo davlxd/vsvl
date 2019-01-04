@@ -60,7 +60,7 @@ const styles = theme => {
     // minHeight: '100%',
     },
     videoTagTimeText: {
-      position: 'absolute',
+      position: 'fixed',
       color: '#FFFFFF',
       fontFamily: '"Courier New", Courier, monospace',
     },
@@ -71,8 +71,8 @@ const styles = theme => {
   }
 }
 
-const mobilePortrait = () => (mobileAndTabletDetector() && window.innerHeight > window.innerWidth)
-const mobileLandscape = () => (mobileAndTabletDetector() && window.innerHeight < window.innerWidth)
+const mobilePortrait = () => (mobileAndTabletDetector() && window.orientation === 0)
+const mobileLandscape = () => (mobileAndTabletDetector() && (window.orientation === 90 || window.orientation === -90))
 
 class VideoSurvl extends Component {
   constructor(props) {
@@ -229,6 +229,19 @@ class VideoSurvl extends Component {
   componentDidMount() {
     this.initiateCamera()
     window.onresize = () => this.forceUpdate()
+    window.onorientationchange = () => {
+      const { width: originalWidth, height: originalHeight } = this.props
+      const [ width, height ] = [originalWidth, originalHeight].sort((a, b) => (mobilePortrait() ? a - b : b - a))
+      this.props.applyVideoParamsAsSettings({
+        height,
+        width,
+      })
+      if (typeof window.cv !== 'undefined') {
+        this.frame = new window.cv.Mat(height, width, window.cv.CV_8UC4)
+        this.fgmask = new window.cv.Mat(height, width, window.cv.CV_8UC1)
+      }
+      this.forceUpdate()
+    }
   }
 
   componentWillUnmount() {
@@ -265,7 +278,7 @@ class VideoSurvl extends Component {
     return (
       <div className={classes.root}>
         <video width={width} height={height} className={streamingVideoStyleClass} ref={this.videoRef} loop autoPlay> </video>
-        <span style={{ top: videoTagTimeTexTX, left: videoTagTimeTexTX }} className={classes.videoTagTimeText}>{videoTagTimeText}</span>
+        <span style={{ left: videoTagTimeTexTX, top: videoTagTimeTexTY }} className={classes.videoTagTimeText}>{videoTagTimeText}</span>
         {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
         <canvas style={{display: 'none'}} id='canvasOutput' ref={this.canvasRef} className={streamingCanvasStyleClass} width={width} height={height}></canvas>
         <SavingToFiles canvasRef={this.canvasRef}/>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Table from '@material-ui/core/Table'
@@ -10,6 +11,9 @@ import Typography from '@material-ui/core/Typography'
 
 import YesIcon from '@material-ui/icons/Done'
 import NoIcon from '@material-ui/icons/Clear'
+import DesktopWindowsIcon from '@material-ui/icons/DesktopWindows'
+import AndroidIcon from '@material-ui/icons/Android'
+import IOSIcon from '@material-ui/icons/PhoneIphone'
 
 const styles = theme => ({
   root: {
@@ -22,6 +26,10 @@ const styles = theme => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  desktopOrMobile: {
+    display: 'flex',
+    alignItems: 'center',
+  },
   paper: {
     padding: theme.spacing.unit * 3,
     marginLeft: 'auto',
@@ -31,7 +39,7 @@ const styles = theme => ({
     overflowX: 'auto',
   },
   section: {
-    marginTop: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit * 8,
   },
   cell: {
     textAlign: 'center',
@@ -44,9 +52,9 @@ class BrowserMatrix extends Component {
   }
 
   render() {
-    const { classes } = this.props
+    const { classes, sorry } = this.props
 
-    const rows = [
+    const desktopRows = [
       { browserName: 'chrome', playback: true, motionDetect: true, saveToFiles: true, },
       { browserName: 'opera', playback: true, motionDetect: true, saveToFiles: true, },
       { browserName: 'firefox', playback: true, motionDetect: true, saveToFiles: true, },
@@ -54,22 +62,33 @@ class BrowserMatrix extends Component {
       { browserName: 'safari', playback: true, motionDetect: true, saveToFiles: false, },
       { browserName: 'ie', playback: false, motionDetect: false, saveToFiles: false, },
     ]
+    const androidRows = [
+      { browserName: 'chrome', playback: true, motionDetect: true, saveToFiles: true, },
+      { browserName: 'opera', playback: true, motionDetect: true, saveToFiles: true, },
+      { browserName: 'firefox', playback: true, motionDetect: true, saveToFiles: true, },
+    ]
+    const iOSRows = [
+      { browserName: 'safari', playback: true, motionDetect: true, saveToFiles: false, },
+      { browserName: 'chrome', playback: false, motionDetect: false, saveToFiles: false, },
+      { browserName: 'opera', playback: false, motionDetect: false, saveToFiles: false, },
+      { browserName: 'firefox', playback: false, motionDetect: false, saveToFiles: false, },
+    ]
 
     return (
       <div className={classes.root}>
         <Paper className={classes.paper}>
-          <section>
-            <Typography variant="h6">
-              Sorry ... Your browser is not suspported ...
-             </Typography>
-          </section>
+          { sorry  &&
+            <section className={classes.section}>
+              <Typography variant="h6">
+                Sorry ... Your browser is not suspported ...
+              </Typography>
+            </section>
+          }
           <section className={classes.section}>
-            <Typography variant="subtitle1">
-              It may sound unworthy but this Web application is compatible with most modern browsers, except for Safari (that also include every browser on iOS. Yes, they are all Safari at their core).
-             </Typography>
-          </section>
-          <br />
-          <section>
+            <div className={classes.desktopOrMobile}>
+              <DesktopWindowsIcon />
+              <span style={{marginLeft: 8}}>Desktop</span>
+            </div>
             <Table className={classes.table}>
               <TableHead>
                 <TableRow>
@@ -80,7 +99,69 @@ class BrowserMatrix extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map(row => {
+                {desktopRows.map(row => {
+                  return (
+                    <TableRow key={row.browserName}>
+                      <TableCell component="th" scope="row"  className={classes.cell}>
+                        <img className={classes.img} width='40px' src={`/browser-logo-${row.browserName}.png`} alt={row.browserName}/>
+                      </TableCell>
+                      <TableCell className={classes.cell}>{row.playback ? <YesIcon /> : <NoIcon />}</TableCell>
+                      <TableCell className={classes.cell}>{row.motionDetect ? <YesIcon /> : <NoIcon />}</TableCell>
+                      <TableCell className={classes.cell}>{row.saveToFiles ? <YesIcon /> : <NoIcon />}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </section>
+
+          <section className={classes.section}>
+            <div className={classes.desktopOrMobile}>
+              <AndroidIcon />
+              <span style={{marginLeft: 8}}>Android</span>
+            </div>
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classes.cell}></TableCell>
+                  <TableCell className={classes.cell}>Playback</TableCell>
+                  <TableCell className={classes.cell}>Motion detect</TableCell>
+                  <TableCell className={classes.cell}>Saving to files</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {androidRows.map(row => {
+                  return (
+                    <TableRow key={row.browserName}>
+                      <TableCell component="th" scope="row"  className={classes.cell}>
+                        <img className={classes.img} width='40px' src={`/browser-logo-${row.browserName}.png`} alt={row.browserName}/>
+                      </TableCell>
+                      <TableCell className={classes.cell}>{row.playback ? <YesIcon /> : <NoIcon />}</TableCell>
+                      <TableCell className={classes.cell}>{row.motionDetect ? <YesIcon /> : <NoIcon />}</TableCell>
+                      <TableCell className={classes.cell}>{row.saveToFiles ? <YesIcon /> : <NoIcon />}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </section>
+
+          <section className={classes.section}>
+            <div className={classes.desktopOrMobile}>
+              <IOSIcon />
+              <span style={{marginLeft: 8}}>iOS</span>
+            </div>
+            <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classes.cell}></TableCell>
+                  <TableCell className={classes.cell}>Playback</TableCell>
+                  <TableCell className={classes.cell}>Motion detect</TableCell>
+                  <TableCell className={classes.cell}>Saving to files</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {iOSRows.map(row => {
                   return (
                     <TableRow key={row.browserName}>
                       <TableCell component="th" scope="row"  className={classes.cell}>
@@ -100,6 +181,12 @@ class BrowserMatrix extends Component {
     )
   }
 }
+
+BrowserMatrix.propTypes = {
+  sorry: PropTypes.bool.isRequired,
+}
+
+BrowserMatrix.defaultProps = {sorry: false}
 
 
 export default withStyles(styles)(BrowserMatrix)
