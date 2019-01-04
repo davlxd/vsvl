@@ -15,7 +15,6 @@ import ImmediateOnAndDelayOff from './immediate-on-and-delay-off'
 const moment = require('moment')
 
 
-
 const styles = theme => {
   const centerize = {
     position: 'fixed',

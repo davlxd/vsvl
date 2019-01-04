@@ -176,6 +176,8 @@ class BrowserMatrix extends Component {
               </TableBody>
             </Table>
           </section>
+
+          <div style={{textAlign: 'center'}}> <a href='/faq' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>FAQ</a></div>
         </Paper>
       </div>
     )
