@@ -71,6 +71,9 @@ const styles = theme => {
   }
 }
 
+const mobilePortrait = () => (mobileAndTabletDetector() && window.innerHeight > window.innerWidth)
+const mobileLandscape = () => (mobileAndTabletDetector() && window.innerHeight < window.innerWidth)
+
 class VideoSurvl extends Component {
   constructor(props) {
     super(props)
@@ -115,17 +118,17 @@ class VideoSurvl extends Component {
       video: { facingMode: 'environment', }
     }).then(stream => {
       this.videoRef.current.srcObject = stream
-      let { frameRate, height, width } = stream.getVideoTracks()[0].getSettings()
-      if (mobileAndTabletDetector() && width > height) {
-        height = width + (width=height, 0)
+      let { frameRate, height = 480, width = 640 } = stream.getVideoTracks()[0].getSettings() // safari gives height&width 0
+      if (mobileAndTabletDetector()) {
+        [ width, height ] = [width, height].sort((a, b) => (mobilePortrait() ? a - b : b - a))
       }
       const frameRatio = width / height
 
       this.props.applyVideoParamsAsSettings({
         frameRate,
         frameRatio,
-        height : height || 480, // safari gives 0
-        width: width || 640,
+        height,
+        width,
       })
 
       this.cancelScheduledSlowLoadingSnack()
