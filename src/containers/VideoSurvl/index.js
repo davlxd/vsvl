@@ -208,12 +208,7 @@ class VideoSurvl extends Component {
         cv.imshow('canvasOutput', this.frame)
         // this.writer.write(fgmask.data)
 
-        let { x: videoTagX, y: videoTagY } = this.videoRef.current.getBoundingClientRect()
-        this.setState({
-          videoTagTimeText: moment().format('L LTS'),
-          videoTagTimeTexTX: (videoTagX < 0 ? 0 : videoTagX) + 8,
-          videoTagTimeTexTY: videoTagY < 0 ? 0 : videoTagY,
-        })
+        this.setState({ videoTagTimeText: moment().format('L LTS'), })
 
         // schedule the next one.
         let delay = 1000/FPS - (Date.now() - begin)
@@ -261,24 +256,33 @@ class VideoSurvl extends Component {
 
   render() {
     const { classes, playbackDisplayMode, frameRatio, width, height } = this.props
-    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, putOnCircularProgress, videoTagTimeText, videoTagTimeTexTX, videoTagTimeTexTY } = this.state
+    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, putOnCircularProgress, videoTagTimeText, } = this.state
 
-    let streamingVideoStyleClass = classes.bgVideoFullScreen
-    let streamingCanvasStyleClass = classes.bgCanvasFullScreen
+    let streamingVideoStyleClass = classes.bgVideoFullScreen, streamingCanvasStyleClass = classes.bgCanvasFullScreen
+    let videoTagTimeTexTTop = 0, videoTagTimeTexTLeft = 0
     if (playbackDisplayMode === 'original') {
       streamingVideoStyleClass = classes.bgOriginal
       streamingCanvasStyleClass = classes.bgOriginal
-    }
-    if (playbackDisplayMode === 'extend') {
+      if (this.videoRef.current != null) {
+        videoTagTimeTexTLeft = this.videoRef.current.getBoundingClientRect().left
+        videoTagTimeTexTTop = this.videoRef.current.getBoundingClientRect().top
+      }
+    } else if (playbackDisplayMode === 'extend') {
       const screenRatio = window.innerWidth / window.innerHeight
-      streamingCanvasStyleClass = screenRatio > frameRatio ? classes.bgCanvasExtendVertical : classes.bgCanvasExtendHorizontal
+      if (screenRatio > frameRatio) {
+        streamingCanvasStyleClass = classes.bgCanvasExtendVertical
+        videoTagTimeTexTLeft = ( window.innerWidth - Math.max(frameRatio, width/window.innerHeight)  * window.innerHeight ) / 2
+      } else {
+        streamingCanvasStyleClass = classes.bgCanvasExtendHorizontal
+        videoTagTimeTexTTop = ( window.innerHeight - window.innerWidth / Math.min(frameRatio, window.innerWidth/height) ) / 2
+      }
       streamingVideoStyleClass = classes.bgVideoExtend
     }
 
     return (
       <div className={classes.root}>
         <video width={width} height={height} className={streamingVideoStyleClass} ref={this.videoRef} loop autoPlay> </video>
-        <span style={{ left: videoTagTimeTexTX, top: videoTagTimeTexTY }} className={classes.videoTagTimeText}>{videoTagTimeText}</span>
+        <span style={{ left: videoTagTimeTexTLeft + 8, top: videoTagTimeTexTTop + 8 }} className={classes.videoTagTimeText}>{videoTagTimeText}</span>
         {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
         <canvas style={{display: 'none'}} id='canvasOutput' ref={this.canvasRef} className={streamingCanvasStyleClass} width={width} height={height}></canvas>
         <SavingToFiles canvasRef={this.canvasRef}/>
