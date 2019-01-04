@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 12 //message = 'use ffmpeg worker even slow'
+const version = 13 //message = 'support safari'
 
 class VersionControl extends Component {
   componentDidMount() {
