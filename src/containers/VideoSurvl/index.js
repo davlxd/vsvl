@@ -15,48 +15,61 @@ import ImmediateOnAndDelayOff from './immediate-on-and-delay-off'
 const moment = require('moment')
 
 
-const styles = theme => ({
-  bgvFullScreen: {
+
+const styles = theme => {
+  const centerize = {
     position: 'fixed',
-    minWidth: '100%',
-    minHeight: '100%',
     top: '50%',
     left: '50%',
     zIndex: '-100',
-    transform: 'translateX(-50%) translateY(-50%)',
-  },
-  bgvExtendHorizontal: {
-    position: 'fixed',
-    width: '100%',
-    top: '50%',
-    left: '50%',
-    zIndex: '-100',
-    transform: 'translateX(-50%) translateY(-50%)',
-  },
-  bgvExtendVertical: {
-    position: 'fixed',
-    height: '100%',
-    top: '50%',
-    left: '50%',
-    zIndex: '-100',
-    transform: 'translateX(-50%) translateY(-50%)',
-  },
-  bgvOriginal: {
-    position: 'fixed',
-    // minWidth: '100%',
-    // minHeight: '100%',
-    top: '50%',
-    left: '50%',
-    zIndex: '-100',
-    transform: 'translateX(-50%) translateY(-50%)',
-  },
-  circularProgress: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
     transform: 'translateX(-50%) translateY(-50%)',
   }
-})
+  const bgBase = centerize
+  return {
+    root: {
+      userSelect: 'none',
+    },
+    bgVideoFullScreen: {
+      ...bgBase,
+      minWidth: '100%',
+      minHeight: '100%',
+      width: 'auto',
+      height: 'auto',
+    },
+    bgVideoExtend: {
+      ...bgBase,
+      minWidth: '100%',
+      minHeight: '100%',
+    },
+    bgCanvasFullScreen: {
+      ...bgBase,
+      minWidth: '100%',
+      minHeight: '100%',
+    },
+    bgCanvasExtendHorizontal: {
+      ...bgBase,
+      width: '100%',
+    },
+    bgCanvasExtendVertical: {
+      ...bgBase,
+      height: '100%',
+    },
+    bgOriginal: {
+      ...bgBase,
+    // minWidth: '100%',
+    // minHeight: '100%',
+    },
+    videoTagTimeText: {
+      position: 'absolute',
+      color: '#FFFFFF',
+      fontFamily: '"Courier New", Courier, monospace',
+    },
+    circularProgress: {
+      ...centerize,
+      zIndex: 1,
+    }
+  }
+}
 
 class VideoSurvl extends Component {
   constructor(props) {
@@ -85,6 +98,9 @@ class VideoSurvl extends Component {
       putOnSlowLoadingSnack: false,
       putOnCircularProgress: true,
       abort: false, //TEMP
+      videoTagTimeText: '',
+      videoTagTimeTexTX: 0,
+      videoTagTimeTexTY: 0,
     }
   }
 
@@ -185,14 +201,20 @@ class VideoSurvl extends Component {
         this.motionDetecting()
 
         cv.putText(this.frame, moment().format('L LTS'), {x: 10, y: 20}, cv.FONT_HERSHEY_PLAIN , 1.3, [255, 255, 255, 255])
+
         cv.imshow('canvasOutput', this.frame)
         // this.writer.write(fgmask.data)
 
+        let { x: videoTagX, y: videoTagY } = this.videoRef.current.getBoundingClientRect()
+        this.setState({
+          videoTagTimeText: moment().format('L LTS'),
+          videoTagTimeTexTX: (videoTagX < 0 ? 0 : videoTagX) + 8,
+          videoTagTimeTexTY: videoTagY < 0 ? 0 : videoTagY,
+        })
+
         // schedule the next one.
         let delay = 1000/FPS - (Date.now() - begin)
-
         setTimeout(processVideo, delay)
-
       } catch (err) {
         console.error(err)
       }
@@ -223,21 +245,26 @@ class VideoSurvl extends Component {
 
   render() {
     const { classes, playbackDisplayMode, frameRatio, width, height } = this.props
-    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, putOnCircularProgress } = this.state
+    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, putOnCircularProgress, videoTagTimeText, videoTagTimeTexTX, videoTagTimeTexTY } = this.state
 
-    let streamingStyleClass = classes.bgvFullScreen
+    let streamingVideoStyleClass = classes.bgVideoFullScreen
+    let streamingCanvasStyleClass = classes.bgCanvasFullScreen
     if (playbackDisplayMode === 'original') {
-      streamingStyleClass = classes.bgvOriginal
+      streamingVideoStyleClass = classes.bgOriginal
+      streamingCanvasStyleClass = classes.bgOriginal
     }
     if (playbackDisplayMode === 'extend') {
       const screenRatio = window.innerWidth / window.innerHeight
-      streamingStyleClass = screenRatio > frameRatio ? classes.bgvExtendVertical : classes.bgvExtendHorizontal
+      streamingCanvasStyleClass = screenRatio > frameRatio ? classes.bgCanvasExtendVertical : classes.bgCanvasExtendHorizontal
+      streamingVideoStyleClass = classes.bgVideoExtend
     }
+
     return (
-      <div>
-        <video style={{}} width={width} height={height} className={streamingStyleClass} ref={this.videoRef} loop autoPlay></video>
+      <div className={classes.root}>
+        <video width={width} height={height} className={streamingVideoStyleClass} ref={this.videoRef} loop autoPlay> </video>
+        <span style={{ top: videoTagTimeTexTX, left: videoTagTimeTexTX }} className={classes.videoTagTimeText}>{videoTagTimeText}</span>
         {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
-        <canvas style={{display: 'none'}} id='canvasOutput' ref={this.canvasRef} className={streamingStyleClass} width={width} height={height}></canvas>
+        <canvas style={{display: 'none'}} id='canvasOutput' ref={this.canvasRef} className={streamingCanvasStyleClass} width={width} height={height}></canvas>
         <SavingToFiles canvasRef={this.canvasRef}/>
         <div className={classes.circularProgress} style={{display: putOnCircularProgress ? null : 'none'}}>
           <CircularProgress />
