@@ -14,8 +14,7 @@ import BrowserMatrix from './components/BrowserMatrix'
 import Home from './containers/Home'
 
 import ieDetector from './browsers/ieDetector'
-import iOSDetector from './browsers/iOSDetector'
-import safariDetector from './browsers/safariDetector'
+import iOSChromeDetector from './browsers/iOSChromeDetector'
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
 
@@ -34,7 +33,7 @@ ReactDOM.render(
   <Provider store={store}>
     <Router>
       <div>
-        <Route exact path="/" render={() => (ieDetector() || (iOSDetector() && !safariDetector()) ? (<BrowserMatrix sorry={true}/>) : (<Home/>) )}/>
+        <Route exact path="/" render={() => ( (ieDetector() || iOSChromeDetector()) ? (<BrowserMatrix sorry={true}/>) : (<Home/>) )}/>
         <Route path="/terms-of-service" component={LegalDoc}/>
         <Route path="/privacy-policy" component={LegalDoc}/>
         <Route path="/cookie-policy" component={LegalDoc}/>
