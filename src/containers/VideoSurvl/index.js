@@ -12,6 +12,7 @@ import mobileAndTabletDetector from '../../browsers/mobileAndTabletDetector'
 import SavingToFiles from '../SavingToFiles'
 
 import ImmediateOnAndDelayOff from './immediate-on-and-delay-off'
+import CurrentTimeLabel from './current-time-label'
 const moment = require('moment')
 
 
@@ -58,11 +59,6 @@ const styles = theme => {
     // minWidth: '100%',
     // minHeight: '100%',
     },
-    videoTagTimeText: {
-      position: 'fixed',
-      color: '#FFFFFF',
-      fontFamily: '"Courier New", Courier, monospace',
-    },
     circularProgress: {
       ...centerize,
       zIndex: 1,
@@ -71,7 +67,7 @@ const styles = theme => {
 }
 
 const mobilePortrait = () => (mobileAndTabletDetector() && window.orientation === 0)
-const mobileLandscape = () => (mobileAndTabletDetector() && (window.orientation === 90 || window.orientation === -90))
+// const mobileLandscape = () => (mobileAndTabletDetector() && (window.orientation === 90 || window.orientation === -90))
 
 class VideoSurvl extends Component {
   constructor(props) {
@@ -100,9 +96,6 @@ class VideoSurvl extends Component {
       putOnSlowLoadingSnack: false,
       putOnCircularProgress: true,
       abort: false, //TEMP
-      videoTagTimeText: '',
-      videoTagTimeTexTX: 0,
-      videoTagTimeTexTY: 0,
     }
   }
 
@@ -117,7 +110,9 @@ class VideoSurvl extends Component {
       video: { facingMode: 'environment', }
     }).then(stream => {
       this.videoRef.current.srcObject = stream
-      let { frameRate, height = 480, width = 640 } = stream.getVideoTracks()[0].getSettings() // safari gives height&width 0
+      let { frameRate, height, width } = stream.getVideoTracks()[0].getSettings()
+      height = height || 480
+      width = width || 640 // safari gives 0 for these 2
       if (mobileAndTabletDetector()) {
         [ width, height ] = [width, height].sort((a, b) => (mobilePortrait() ? a - b : b - a))
       }
@@ -202,9 +197,7 @@ class VideoSurvl extends Component {
 
         this.motionDetecting()
 
-        let displayTimeText = moment().format('YYYY-MM-DD HH:mm:ss')
-        cv.putText(this.frame, displayTimeText, {x: 10, y: 20}, cv.FONT_HERSHEY_PLAIN , 1.3, [255, 255, 255, 255])
-        this.setState({ videoTagTimeText: displayTimeText, })
+        cv.putText(this.frame, moment().format('YYYY-MM-DD HH:mm:ss'), {x: 10, y: 20}, cv.FONT_HERSHEY_PLAIN , 1.3, [255, 255, 255, 255])
 
         cv.imshow('canvasOutput', this.frame)
         // this.writer.write(fgmask.data)
@@ -255,7 +248,7 @@ class VideoSurvl extends Component {
 
   render() {
     const { classes, playbackDisplayMode, frameRatio, width, height } = this.props
-    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, putOnCircularProgress, videoTagTimeText, } = this.state
+    const { putOnNeedCameraSnack, putOnSlowLoadingSnack, putOnCircularProgress, } = this.state
 
     let streamingVideoStyleClass = classes.bgVideoFullScreen, streamingCanvasStyleClass = classes.bgCanvasFullScreen
     let videoTagTimeTexTTop = 0, videoTagTimeTexTLeft = 0
@@ -280,8 +273,8 @@ class VideoSurvl extends Component {
 
     return (
       <div className={classes.root}>
-        <video width={width} height={height} className={streamingVideoStyleClass} ref={this.videoRef} loop autoPlay> </video>
-        <span style={{ left: videoTagTimeTexTLeft + 8, top: videoTagTimeTexTTop + 8 }} className={classes.videoTagTimeText}>{videoTagTimeText}</span>
+        <video width={width} height={height} className={streamingVideoStyleClass} ref={this.videoRef} loop autoPlay playsInline />
+        <CurrentTimeLabel style={{ left: videoTagTimeTexTLeft + 8, top: videoTagTimeTexTTop + 8 }}/>
         {/* <canvas style={{[playbackDisplayMode === 'extend' && frameRatio > 1 ? 'width' : 'height']: '100%'}} id='canvasOutputMotion' className={classes.bgvOriginal} width={width} height={height}></canvas> */}
         <canvas style={{display: 'none'}} id='canvasOutput' ref={this.canvasRef} className={streamingCanvasStyleClass} width={width} height={height}></canvas>
         <SavingToFiles canvasRef={this.canvasRef}/>
