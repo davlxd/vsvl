@@ -151,7 +151,7 @@ class SettingsSlider extends Component {
 
   handleSplitFileTimeChange = event => {
     const value = event.target.value
-    if ((value === 'on-the-10-min' || value === 'on-the-30-min' || value === 'on-the-hour') && !this.props.savingRawVideoFiles) {
+    if ((value === 'on-the-30-min' || value === 'on-the-hour') && !this.props.savingRawVideoFiles) {
       this.setState({
         putOnEncodingCouldTakeLongTimeSnack: true
       })
@@ -203,16 +203,14 @@ class SettingsSlider extends Component {
             </Paper>
 
             <Paper elevation={1} className={classes.paperSettingColumn}>
-              <Typography variant="h5" gutterBottom>Saving to Files</Typography>
+              <Typography variant="h5" gutterBottom>Saving</Typography>
               <Divider className={classes.dividerBelowTitle}/>
-              <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggleSavingToFiles} color="primary" /> } label="Saving to files" />
-              <Tooltip title='Saving will pause if no motion detected, will resume if motion detected again'>
-                <FormControlLabel control={ <Checkbox checked={savingToFilesOnlyMotionDetected} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color={savingToFiles ? 'primary' : 'default'} /> } label="Saving only when motion detected" />
-              </Tooltip>
+              <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggleSavingToFiles} color="primary" /> } label={<Tooltip title='vclips will be downloaded periodically on finishing preparing'><span>Save video clips</span></Tooltip>} />
+              <FormControlLabel control={ <Checkbox checked={savingToFilesOnlyMotionDetected} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color={savingToFiles ? 'primary' : 'default'} /> } label="Pause saving when no motion detected" />
               <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} value={savingToFilesPrefix} fullWidth onChange={this.handleChange('savingToFilesPrefix')} margin="normal" color={savingToFiles ? 'primary' : 'default'}/>
               <FormControlLabel className={classes.savingRawVideoFilesCheckbox} control={ <Checkbox checked={savingRawVideoFiles} onChange={this.handleToggle('savingRawVideoFiles')} color={savingToFiles ? 'primary' : 'default'} /> } label={<span>Saving <a href='/faq' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>raw video files</a></span>}/>
               <FormControl component="fieldset" className={classes.formControl} color={savingToFiles ? 'primary' : 'default'}>
-                <FormLabel component="legend" className={classes.createANewFileLabel}>Create a new file</FormLabel>
+                <FormLabel component="legend" className={classes.createANewFileLabel}>Save to a new file</FormLabel>
                 <RadioGroup aria-label="Alerting" name="alert-strategy" className={classes.radioGroup} value={savingToFilesStrategy} onChange={this.handleChange('savingToFilesStrategy')}>
                   <FormControlLabel value="motion-detected" className={classes.radioLabel} control={<Radio color={savingToFiles ? 'primary' : 'default'}/>} label="when motion detected" />
                   {/*<FormControlLabel value="file-size"className={classes.radioLabel}  control={<Radio color={savingToFiles ? 'primary' : 'default'}/>} label="the file size exceeds" /> */}
