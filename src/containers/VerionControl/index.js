@@ -15,6 +15,8 @@ class VersionControl extends Component {
   componentDidUpdate(prevProps) {
     if (!prevProps.consent && this.props.consent) {
       localStorage.setItem('v', version)
+      localStorage.setItem('init-v', version)
+      localStorage.setItem('init-ts', Date.now())
     }
   }
 

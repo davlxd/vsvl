@@ -42,6 +42,8 @@ Below are examples of the cookies set by videosurveillance.webcam, with explanat
 |--- |--- |
 |consent|Users' consent of Terms of Service, Privacy Policy, And Cookie Policy|
 |v|Current version of this Web Application, its existence also implies users' consent of Terms of Service, Privacy Policy, And Cookie Policy |
+|init-v|Version number when user uses this Web Application the first time|
+|init-ts|Timestamp when user uses this Web Application the first time|
 |settings|Preferences/Settings set by users of this Web Application|
 |banner|Stores certain banners have displayed|
 
