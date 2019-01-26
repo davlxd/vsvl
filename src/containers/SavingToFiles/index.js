@@ -194,11 +194,22 @@ class SavingToFiles extends Component {
     }
   }
 
+  initiateFFmpegWorkerAfterOpenCVLoaded() {
+    if (typeof window.cv !== 'undefined') {
+      new FFmpegWorker(ts => {
+        this.ffmpegLoadTime = ts
+        console.log('FFmpeg library loaded time: ', ts)
+      })
+      return
+    }
+    setTimeout(() => {
+      console.log('OpenCV not loaded yet, defer ffmepg-worker loading')
+      this.initiateFFmpegWorkerAfterOpenCVLoaded()
+    }, 4000)
+  }
+
   componentDidMount() {
-    new FFmpegWorker(ts => {
-      this.ffmpegLoadTime = ts
-      console.log('FFmpeg library loaded time: ', ts)
-    })
+    this.initiateFFmpegWorkerAfterOpenCVLoaded()
     this.rescheduleSplitFileBasedOnTime()
   }
 
