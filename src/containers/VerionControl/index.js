@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 13 //message = 'support safari'
+const version = 14 //message = 'SavingExplainSnack and others'
 
 class VersionControl extends Component {
   componentDidMount() {
