@@ -6,7 +6,7 @@ import saveAs from 'file-saver'
 
 import { SAVING_FILES, SAVING_COMPLETE, NEW_FFMPEG_WORK, FFMPEG_WORK_FINISHED, FFMPEG_WORK_UPDATE_PROGRESS } from '../../actions'
 
-import UseVlcSnack from '../UseVlcSnack'
+import UseVlcSnack from '../../components/UseVlcSnack'
 
 import FFmpegWorker from './ffmpeg-worker'
 
