@@ -118,7 +118,7 @@ class BrowserMatrix extends Component {
           <section className={classes.section}>
             <div className={classes.desktopOrMobile}>
               <AndroidIcon />
-              <span style={{marginLeft: 8}}>Android</span>
+              <span style={{marginLeft: 8}}>Android *</span>
             </div>
             <Table className={classes.table}>
               <TableHead>
@@ -149,7 +149,7 @@ class BrowserMatrix extends Component {
           <section className={classes.section}>
             <div className={classes.desktopOrMobile}>
               <IOSIcon />
-              <span style={{marginLeft: 8}}>iOS</span>
+              <span style={{marginLeft: 8}}>iOS*</span>
             </div>
             <Table className={classes.table}>
               <TableHead>
@@ -175,6 +175,12 @@ class BrowserMatrix extends Component {
                 })}
               </TableBody>
             </Table>
+          </section>
+
+          <section className={classes.section}>
+            <Typography variant="body1">
+              * This Web Application is compute-intensive, hence it's not recommended to run on small mobile devices.
+            </Typography>
           </section>
 
           <div style={{textAlign: 'center'}}> <a href='/faq' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>FAQ</a></div>
