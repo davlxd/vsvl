@@ -75,6 +75,7 @@ class ConsentDialog extends Component {
               depending on various scenarios and the country/region you live.
               Please seek legal advice and make sure your activities comply with all applicable laws and regulations.
               This Web application will not be held accountable for any illegal activities.
+              Please respect the privacy of others!
             </DialogContentText>
             <FormControlLabel
               control={
