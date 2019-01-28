@@ -9,7 +9,6 @@ import Divider from '@material-ui/core/Divider'
 import Slide from '@material-ui/core/Slide'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormControl from '@material-ui/core/FormControl'
-import Tooltip from '@material-ui/core/Tooltip'
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import TextField from '@material-ui/core/TextField'
@@ -23,6 +22,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 
 import BrowserCannotSavingFilesSnack from '../../components/BrowserCannotSavingFilesSnack'
 import EncodingCouldTakeLongTimeSnack from '../../components/EncodingCouldTakeLongTimeSnack'
+import SavingExplainSnack from '../../components/SavingExplainSnack'
 
 import browser from 'browser-detect'
 
@@ -108,6 +108,7 @@ class SettingsSlider extends Component {
   state = {
     checked: false,
     putOnBrowserCannotSavingFilesSnack: false,
+    putOnSavingExplainSnack: false,
     putOnEncodingCouldTakeLongTimeSnack: false,
   }
 
@@ -136,12 +137,11 @@ class SettingsSlider extends Component {
 
   handleToggleSavingToFiles = event => {
     if (browser().name === 'chrome' || browser().name === 'firefox' || browser().name === 'opera') {
+      this.setState({ putOnSavingExplainSnack: true })
       return this.handleToggle('savingToFiles')(event)
     }
 
-    this.setState({
-      putOnBrowserCannotSavingFilesSnack: true
-    })
+    this.setState({ putOnBrowserCannotSavingFilesSnack: true })
   }
 
   handleChange = name => event => {
@@ -173,7 +173,7 @@ class SettingsSlider extends Component {
       splitFileSize,
       splitFileTime,
      } = this.props
-    const { checked, putOnBrowserCannotSavingFilesSnack, putOnEncodingCouldTakeLongTimeSnack } = this.state
+    const { checked, putOnBrowserCannotSavingFilesSnack, putOnSavingExplainSnack, putOnEncodingCouldTakeLongTimeSnack } = this.state
 
     return (
       <div className={classes.root}>
@@ -205,7 +205,7 @@ class SettingsSlider extends Component {
             <Paper elevation={1} className={classes.paperSettingColumn}>
               <Typography variant="h5" gutterBottom>Saving</Typography>
               <Divider className={classes.dividerBelowTitle}/>
-              <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggleSavingToFiles} color="primary" /> } label={<Tooltip title='vclips will be downloaded periodically on finishing preparing'><span>Save video clips</span></Tooltip>} />
+              <FormControlLabel control={ <Switch checked={savingToFiles} onChange={this.handleToggleSavingToFiles} color="primary" /> } label='Save video clips' />
               <FormControlLabel control={ <Checkbox checked={savingToFilesOnlyMotionDetected} onChange={this.handleToggle('savingToFilesOnlyMotionDetected')} color={savingToFiles ? 'primary' : 'default'} /> } label="Pause saving when no motion detected" />
               <TextField id="file-prefix" label="File prefix" className={classes.filePrefixTextField} value={savingToFilesPrefix} fullWidth onChange={this.handleChange('savingToFilesPrefix')} margin="normal" color={savingToFiles ? 'primary' : 'default'}/>
               <FormControlLabel className={classes.savingRawVideoFilesCheckbox} control={ <Checkbox checked={savingRawVideoFiles} onChange={this.handleToggle('savingRawVideoFiles')} color={savingToFiles ? 'primary' : 'default'} /> } label={<span>Saving <a href='/faq' target='_blank' rel="noopener noreferrer" style={{color: 'inherit'}}>raw video files</a></span>}/>
@@ -242,6 +242,7 @@ class SettingsSlider extends Component {
           </Paper>
         </Slide>
         <BrowserCannotSavingFilesSnack on={putOnBrowserCannotSavingFilesSnack} off={() => {this.setState({putOnBrowserCannotSavingFilesSnack: false})}}/>
+        <SavingExplainSnack on={putOnSavingExplainSnack} off={() => {this.setState({putOnSavingExplainSnack: false})}}/>
         <EncodingCouldTakeLongTimeSnack on={putOnEncodingCouldTakeLongTimeSnack} off={() => {this.setState({putOnEncodingCouldTakeLongTimeSnack: false})}}/>
       </div>
     )
