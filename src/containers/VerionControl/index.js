@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 
-const version = 14 //message = 'SavingExplainSnack and others'
+const version = 15 //message = 'Final rewording'
 
 class VersionControl extends Component {
   componentDidMount() {

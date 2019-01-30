@@ -67,8 +67,8 @@ class ConsentDialog extends Component {
           <DialogTitle id="videoSurveillance-webcam">{"Video Surveillance with Webcam"}</DialogTitle>
           <DialogContent>
             <DialogContentText variant='body1' className={classes.dialogParagraph1}>
-              This Web application captures video from Webcam, presents on web page,
-              and/or saves to files on your device, with various Video Content Analysis functionalities (e.g. motion detection) available.
+              This Web application captures video from Webcam, presents on web page with motion detect alert,
+              and can save video clips to your device.
             </DialogContentText>
             <DialogContentText variant='body1' className={classes.dialogParagraph2}>
               Video surveillance activities may or may not legal,
@@ -95,7 +95,7 @@ class ConsentDialog extends Component {
               However it uses Google Analytics (to measure traffic and usage), which transfers data over Internet.
             </DialogContentText>
             <DialogContentText variant='body1' className={classes.dialogParagraph22}>
-              This Web application also store cookies on your device.
+              This Web application also store cookies and Web storage on your device.
               Please read our <a href='/terms-of-service' target='_blank' rel="noopener noreferrer" className={classes.a}>Terms of Service</a>,
               <a href='/privacy-policy' target='_blank' rel="noopener noreferrer" className={classes.a}>Privacy Policy</a> and <a href='/cookie-policy' target='_blank' className={classes.a}>Cookies Policy</a> for detailed explanation.
             </DialogContentText>
